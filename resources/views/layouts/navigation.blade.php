@@ -2,7 +2,7 @@
     use App\Models\Question;
 
     $levels = Question::select('level')->distinct()->orderBy('level')->get();
-    $activeLevel = auth()->user() ? auth()->user()->level + 1 : 1; // აქტიური ლეველი მოთამაშისთვის
+    $activeLevel = auth()->user() ? auth()->user()->level: 1; // აქტიური ლეველი მოთამაშისთვის
 @endphp
 
 <nav class="navbar navbar-expand-lg bg-dark border-bottom border-body fixed-top" data-bs-theme="dark">

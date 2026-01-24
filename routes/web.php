@@ -21,4 +21,7 @@ Route::get('/dashboard', function () {
     return view('dashboard');
 })->middleware(['auth'])->name('dashboard');
 
+Route::get('/level/complete/{level}', [App\Http\Controllers\LevelController::class, 'complete'])->name('level.complete');
+
+
 require __DIR__.'/auth.php';
