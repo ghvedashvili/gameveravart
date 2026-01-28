@@ -11,11 +11,14 @@
 <body>
 
 @include('layouts.navigation')
+
 <style>
     body {
         padding-top: 70px; /* navbar-ის სიმაღლე */
     }
 </style>
+
+
 <main>
     @yield('content')
 </main>
@@ -88,6 +91,7 @@
 
 <!-- Bootstrap JS (აუცილებელია) -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
 </body>
 </html>

@@ -39,19 +39,13 @@
                         @if($activeLevel == 1) (Current) @endif
                     </a>
                 </li>
-                @foreach($levels as $level)
-                    @php
-                        $isActive = $level->level == $activeLevel;
-                        $isDisabled = $level->level > $activeLevel;
-                    @endphp
-                    <li>
-                        <a class="dropdown-item {{ $isDisabled ? 'disabled text-muted' : '' }} {{ $isActive ? 'fw-bold text-warning' : '' }}"
-                           href="{{ $isDisabled ? '#' : '#level' . $level->level }}">
-                            Level {{ $level->level }}
-                            @if($isActive) (Current) @endif
-                        </a>
-                    </li>
-                @endforeach
+               @foreach($levels as $lvl)
+    <a class="dropdown-item {{ $lvl->level > auth()->user()->level ? 'disabled' : '' }}"
+       href="{{ $lvl->level <= auth()->user()->level ? route('levels.show', $lvl->level) : '#' }}">
+        Level {{ $lvl->level }}
+    </a>
+@endforeach
+
             </ul>
           </li>
 

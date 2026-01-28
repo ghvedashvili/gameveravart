@@ -1,7 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-
+use App\Http\Controllers\LevelController;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -21,7 +21,14 @@ Route::get('/dashboard', function () {
     return view('dashboard');
 })->middleware(['auth'])->name('dashboard');
 
-Route::get('/level/complete/{level}', [App\Http\Controllers\LevelController::class, 'complete'])->name('level.complete');
+//Route::get('/level/complete/{level}', [App\Http\Controllers\LevelController::class, 'complete'])->name('level.complete');
 
+Route::middleware(['auth'])->group(function () {
+    Route::get('/levels/{level}', [LevelController::class, 'show'])
+        ->name('levels.show');
+
+    Route::post('/levels/{level}/check', [LevelController::class, 'check'])
+        ->name('levels.check');
+});
 
 require __DIR__.'/auth.php';

@@ -1,5 +1,6 @@
 <?php
 
+
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
@@ -8,43 +9,45 @@ use Illuminate\Support\Facades\Auth;
 
 class LevelController extends Controller
 {
-    // Load level page
-    public function show($level = null)
+
+
+    public function show($level)
     {
         $user = Auth::user();
 
-        // Current user level
-        $currentLevel = $user->level ?? 0;
+        // არ მისცე მომავალ ლეველზე გადასვლა
+        if ($level > $user->level) {
+            abort(403, 'This level is locked');
+        }
 
-        // თუ level parameter არ არის მითითებული, currentLevel
-        $levelToShow = $level ?? $currentLevel;
+        $question = Question::where('level', $level)->firstOrFail();
 
-        // Load all levels up to current
-        $questions = Question::where('level', '<=', $levelToShow)
-            ->orderBy('level')
-            ->get();
-
-        return view('levels.show', compact('questions', 'currentLevel'));
+        return view('levels.level', [
+            'question' => $question,
+            'level' => $level,
+            'userLevel' => $user->level
+        ]);
     }
 
-    // Check answer
     public function check(Request $request, $level)
     {
         $user = Auth::user();
         $question = Question::where('level', $level)->firstOrFail();
 
-        $answer = trim(strtolower($request->answer));
-        $correct = trim(strtolower($question->answer));
+        if ($user->level != $level) {
+            return response()->json(['status' => 'locked']);
+        }
 
-        if ($answer === $correct && $user->level == $level) {
-            $user->increment('level'); // Level +1
-            $user->save();
+        if (strtolower(trim($request->answer)) === strtolower(trim($question->answer))) {
+            $user->increment('level');
 
-            return response()->json(['status' => 'correct', 'nextLevel' => $user->level]);
+            return response()->json([
+                'status' => 'correct',
+                'nextLevel' => $user->level
+            ]);
         }
 
         return response()->json(['status' => 'wrong']);
     }
-
-    
 }
+
