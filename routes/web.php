@@ -4,6 +4,8 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\LevelController;
 use App\Http\Controllers\NicknameController;
 use App\Http\Controllers\CaptchaController;
+use App\Http\Controllers\RussiaIsOccupierController;
+
 
 /*
 |--------------------------------------------------------------------------
@@ -39,6 +41,12 @@ Route::middleware(['auth'])->group(function () {
 
     Route::post('/levels/2/verify', [CaptchaController::class, 'verify'])
         ->name('level2.verify');
+
+    Route::get('/levels/3', [RussiaIsOccupierController::class, 'entry']);
+    Route::get('/levels/3/{code}', [RussiaIsOccupierController::class, 'index'])
+        ->name('level3');
+    Route::post('/levels/3/complete', [RussiaIsOccupierController::class, 'complete'])
+    ->middleware('auth');
     /*
     |--------------------------------------------------
     | Generic levels (1,3,4,5...)

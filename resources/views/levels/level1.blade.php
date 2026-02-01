@@ -199,4 +199,6 @@ input.addEventListener('input', async () => {
 fetchRules();
 
 </script>
+@else
+<b>{{ $nickname }}</b>
 @endif

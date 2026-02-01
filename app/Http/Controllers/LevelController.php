@@ -19,12 +19,13 @@ class LevelController extends Controller
         if ($level > $user->level) {
             abort(403, 'This level is locked');
         }
-        
+
         $question = Question::where('level', $level)->firstOrFail();
 
         return view('levels.level', [
             'question' => $question,
             'level' => $level,
+            'nickname' => $user->nickname,
             'userLevel' => $user->level
         ]);
     }
