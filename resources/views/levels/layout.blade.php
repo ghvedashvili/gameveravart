@@ -7,13 +7,19 @@
 
             <h4>Level {{ $level }}</h4>
 
-            {{-- წესები --}}
-            @if($question->rules)
-                <p>{{ $question->rules }}</p>
+            @if($userLevel == $level)
+             {{-- წესები --}}
+                @if($question->rules)
+                    <p>{{ $question->rules }}</p>
+                @endif
             @endif
+           
+           
 
             {{-- უნიკალური კონტენტი ლეველისთვის --}}
-            @yield('level-content')
+           @if($level == 1)
+                @yield('level-content')
+            @endif
 
             {{-- დასრულებული ლეველი --}}
             @if($userLevel > $level)
