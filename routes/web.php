@@ -5,6 +5,10 @@ use App\Http\Controllers\LevelController;
 use App\Http\Controllers\NicknameController;
 use App\Http\Controllers\CaptchaController;
 use App\Http\Controllers\RussiaIsOccupierController;
+use App\Http\Controllers\Auth\GoogleController;
+
+Route::get('/auth/google', [GoogleController::class, 'redirectToGoogle'])->name('google.login');
+Route::get('/auth/google/callback', [GoogleController::class, 'handleGoogleCallback']);
 
 
 /*

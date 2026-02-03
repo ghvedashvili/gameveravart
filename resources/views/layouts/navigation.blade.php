@@ -62,24 +62,23 @@
           </li>
 
         @else
-          <!-- სტუმარი → Modal -->
-          <li class="nav-item">
-            <a class="nav-link text-white"
-               href="#"
-               data-bs-toggle="modal"
-               data-bs-target="#loginModal">
-              Login
-            </a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link text-white"
-               href="#"
-               data-bs-toggle="modal"
-               data-bs-target="#registerModal">
-              Register
-            </a>
-          </li>
-        @endauth
+  <!-- სტუმარი → Modal / Google Login -->
+  <li class="nav-item">
+    <a class="nav-link text-white" href="{{ route('google.login') }}">
+      Login with Google
+    </a>
+  </li>
+
+  <li class="nav-item">
+    <a class="nav-link text-white"
+       href="#"
+       data-bs-toggle="modal"
+       data-bs-target="#registerModal">
+      Register
+    </a>
+  </li>
+@endauth
+
 
       </ul>
     </div>
