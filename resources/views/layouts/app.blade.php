@@ -7,6 +7,7 @@
 <meta name="csrf-token" content="{{ csrf_token() }}">
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
 </head>
 <body>
 
@@ -16,6 +17,42 @@
     body {
         padding-top: 70px; /* navbar-ის სიმაღლე */
     }
+
+    .app-loader {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.65);
+    backdrop-filter: blur(4px);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    z-index: 99999;
+}
+
+.app-loader.hidden {
+    display: none;
+}
+
+.spinner {
+    width: 52px;
+    height: 52px;
+    border: 4px solid rgba(255,255,255,0.25);
+    border-top-color: #fff;
+    border-radius: 50%;
+    animation: spin 0.9s linear infinite;
+}
+
+.loader-text {
+    margin-top: 14px;
+    color: #fff;
+    font-size: 14px;
+    opacity: 0.85;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
 </style>
 
 
@@ -88,10 +125,43 @@
         </div>
     </div>
 </div>
-
+<div id="app-loader" class="app-loader hidden">
+    <div class="spinner"></div>
+    <div class="loader-text">Loading…</div>
+</div>
 <!-- Bootstrap JS (აუცილებელია) -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+window.AppLoader = {
+    show(text = 'Loading…') {
+        const loader = document.getElementById('app-loader');
+        if (!loader) return;
+
+        loader.querySelector('.loader-text').innerText = text;
+        loader.classList.remove('hidden');
+    },
+    hide() {
+        const loader = document.getElementById('app-loader');
+        if (!loader) return;
+
+        loader.classList.add('hidden');
+    }
+};
+
+// ყველა form submit-ზე
+document.addEventListener('submit', () => {
+    AppLoader.show();
+});
+
+// ყველა link-ზე სადაც data-loader არის
+document.addEventListener('click', e => {
+    const link = e.target.closest('a[data-loader]');
+    if (link) {
+        AppLoader.show(link.dataset.loaderText || 'Loading…');
+    }
+});
+</script>
 
 </body>
 </html>

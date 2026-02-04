@@ -24,6 +24,7 @@ class GoogleController extends Controller
             [
                 'name' => $googleUser->getName(),
                 'google_id' => $googleUser->getId(),
+                'nickname' => $googleUser->getName(),
                 'password' => bcrypt(rand(1000,9999)) // დროებითი პაროლი
             ]
         );

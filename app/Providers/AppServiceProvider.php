@@ -3,9 +3,19 @@
 namespace App\Providers;
 
 use Illuminate\Support\ServiceProvider;
+use Illuminate\Support\Facades\URL;
 
 class AppServiceProvider extends ServiceProvider
 {
+    
+
+public function boot()
+{      //დასტარტვა ngrok
+    // if (app()->environment('local')) {
+    //     URL::forceScheme('https');
+    // }
+}
+
     /**
      * Register any application services.
      *
@@ -21,8 +31,8 @@ class AppServiceProvider extends ServiceProvider
      *
      * @return void
      */
-    public function boot()
-    {
-        //
-    }
+    // public function boot()
+    // {
+    //     //
+    // }
 }
