@@ -34,7 +34,7 @@ document.addEventListener('DOMContentLoaded', function () {
         .then(data => {
 
             Swal.close(); // ⛔ Loader დავხუროთ
-console.log(data);
+// console.log(data);
             if(data.status === 'correct') {
 
                 Swal.fire({

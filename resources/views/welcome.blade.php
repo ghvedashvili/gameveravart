@@ -3,8 +3,8 @@
 @section('content')
 @auth
 <div class="container text-center mt-5">
-    <h1>33333333333333Welcome to GameVeravart ⚽</h1>
-    <p>Virtual football universe</p>
+    <h1>Welcome to GameVeravart ⚽</h1>
+    <p></p>
 </div>
 <div class="container mt-4">
     <h3>Welcome back, {{ auth()->user()->name }} 👋</h3>
@@ -18,8 +18,8 @@
 </div>
 @else
 <div class="container text-center mt-5">
-    <h1>eeeeeeeeeeeeeeeeeeeeeeeeeeeWelcome to GameVeravart ⚽</h1>
-    <p>eeeeeeeeeeeeeeeeeeeeeeeeeeeVirtual football universe</p>
+    <h1>Welcome to GameVeravart</h1>
+    <p></p>
 </div>
 
 @endauth

@@ -103,31 +103,38 @@
           </li>
 
           <!-- Logout -->
-          <li class="nav-item">
-            <form method="POST" action="{{ route('logout') }}">
-    @csrf
-    <button type="submit"
-            class="nav-link text-white bg-transparent border-0"
-            onclick="AppLoader.show('Logging out…')">
-        Logout
-    </button>
-</form>
-          </li>
+          <li class="nav-item d-flex align-items-center">
+    <form method="POST"
+          action="{{ route('logout') }}"
+          data-loader
+          data-loader-text="Signing out…"
+          class="m-0">
+        @csrf
+        <button type="submit"
+                class="nav-link btn btn-link text-danger p-0">
+            Logout
+        </button>
+    </form>
+</li>
+
 
         @else
   <!-- სტუმარი → Modal / Google Login -->
   <li class="nav-item">
-<a href="{{ route('google.login') }}"
-   data-loader
-   data-loader-text="Signing in with Google…">
-   Login with Google
-</a>
-  </li>
+    <a class="nav-link text-white d-flex align-items-center gap-2"
+       href="{{ route('google.login') }}"
+       data-loader
+       data-loader-text="Signing in with Google…">
+       
+       <img src="https://www.svgrepo.com/show/475656/google-color.svg" width="18">
+       Login with Google
+    </a>
+</li>
 
 
  
           <!-- სტუმარი → Modal -->
-          <li class="nav-item">
+          <!-- <li class="nav-item">
             <a class="nav-link text-white"
                href="#"
                data-bs-toggle="modal"
@@ -142,7 +149,7 @@
                data-bs-target="#registerModal">
               Register
             </a>
-          </li>
+          </li> -->
         
 @endauth
 
@@ -151,3 +158,11 @@
     </div>
   </div>
 </nav>
+<script>
+    document.addEventListener('submit', e => {
+    const form = e.target.closest('form[data-loader]');
+    if (form) {
+        AppLoader.show(form.dataset.loaderText || 'Loading…');
+    }
+});
+    </script>

@@ -81,7 +81,7 @@
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
             </div>
 
-            <form method="POST" action="{{ route('login') }}">
+            <form method="POST" >
                 @csrf
                 <div class="modal-body">
                     <div class="mb-3">
@@ -110,7 +110,7 @@
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
             </div>
 
-            <form method="POST" action="{{ route('register') }}">
+            <form method="POST">
                 @csrf
                 <div class="modal-body">
                     <div class="mb-3">

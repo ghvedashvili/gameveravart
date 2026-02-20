@@ -8,39 +8,60 @@ use App\Http\Controllers\RussiaIsOccupierController;
 use App\Http\Controllers\Auth\GoogleController;
 use App\Http\Controllers\LevelUpController;
 
-
-Route::get('/auth/google', [GoogleController::class, 'redirectToGoogle'])->name('google.login');
-Route::get('/auth/google/callback', [GoogleController::class, 'handleGoogleCallback']);
-
-
 /*
 |--------------------------------------------------------------------------
 | Public
 |--------------------------------------------------------------------------
 */
+
 Route::get('/', function () {
     return view('welcome');
 });
 
 /*
 |--------------------------------------------------------------------------
-| Dashboard
+| Block default /login completely
 |--------------------------------------------------------------------------
 */
-Route::get('/dashboard', function () {
-    return view('dashboard');
-})->middleware(['auth'])->name('dashboard');
+
+Route::get('/login', function () {
+    return redirect('/');
+});
+Route::post('/logout', function () {
+    Auth::logout();
+    request()->session()->invalidate();
+    request()->session()->regenerateToken();
+
+    return redirect('/');
+})->name('logout');
+/*
+|--------------------------------------------------------------------------
+| Google Auth
+|--------------------------------------------------------------------------
+*/
+
+Route::get('/auth/google', [GoogleController::class, 'redirectToGoogle'])
+    ->name('google.login');
+
+Route::get('/auth/google/callback', [GoogleController::class, 'handleGoogleCallback']);
 
 /*
 |--------------------------------------------------------------------------
-| Levels (auth required)
+| Protected Routes (auth required)
 |--------------------------------------------------------------------------
 */
+
 Route::middleware(['auth'])->group(function () {
 
+    Route::get('/dashboard', function () {
+        return view('dashboard');
+    })->name('dashboard');
 
-
-
+    /*
+    |--------------------------------------------------
+    | Level 2 – CAPTCHA
+    |--------------------------------------------------
+    */
 
     Route::get('/levels/2', [CaptchaController::class, 'show'])
         ->name('level2.show');
@@ -48,19 +69,32 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/levels/2/verify', [CaptchaController::class, 'verify'])
         ->name('level2.verify');
 
+    /*
+    |--------------------------------------------------
+    | Level 3
+    |--------------------------------------------------
+    */
+
     Route::get('/levels/3', [RussiaIsOccupierController::class, 'entry']);
     Route::get('/levels/3/{code}', [RussiaIsOccupierController::class, 'index'])
         ->name('level3');
-    Route::post('/levels/3/complete', [RussiaIsOccupierController::class, 'complete'])
-    ->middleware('auth');
 
-    Route::get('/levels/4/complete', [LevelUpController::class, 'complete'])
-    ->middleware('auth');
+    Route::post('/levels/3/complete', [RussiaIsOccupierController::class, 'complete']);
+
     /*
     |--------------------------------------------------
-    | Generic levels (1,3,4,5...)
+    | Level 4 Complete
     |--------------------------------------------------
     */
+
+    Route::get('/levels/4/complete', [LevelUpController::class, 'complete']);
+
+    /*
+    |--------------------------------------------------
+    | Generic Levels
+    |--------------------------------------------------
+    */
+
     Route::get('/levels/{level}', [LevelController::class, 'show'])
         ->whereNumber('level')
         ->name('levels.show');
@@ -71,21 +105,14 @@ Route::middleware(['auth'])->group(function () {
 
     /*
     |--------------------------------------------------
-    | Nickname level AJAX
+    | Nickname Level AJAX
     |--------------------------------------------------
     */
+
     Route::post('/level/{level}/nickname/live', [NicknameController::class, 'live'])
         ->whereNumber('level');
 
     Route::post('/level/{level}/nickname/submit', [NicknameController::class, 'submit'])
         ->whereNumber('level');
 
-    /*
-    |--------------------------------------------------
-    | Level 2 – CAPTCHA (special level)
-    |--------------------------------------------------
-    */
-   
 });
-
-require __DIR__.'/auth.php';

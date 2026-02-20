@@ -76,10 +76,14 @@ private function getRules(string $nickname): array
         // ['id'=>15,'text'=>'Nickname უნდა შეიცავდეს ათწილადს','passed'=>preg_match('/\d+\.\d+/',$nickname)],
         // ['id'=>16,'text'=>'Nickname არ უნდა შეიცავდეს ქართულ ასოებს','passed'=>!preg_match('/[ა-ჰ]/',$nickname)],
         // ['id'=>17,'text'=>'Nickname არ უნდა შეიცავდეს მიმდევრობით ერთსა და იმავე სიმბოლოს 2-ზე მეტჯერ','passed'=>!preg_match('/(.)\1\1/',$nickname)],
-        [
+       [
     'id' => 18,
     'text' => 'Nickname უნდა შეიცავდეს ტემპერატურას (-375°C-დან 10000°C-მდე ან °F)',
-    'passed' => preg_match('/\-?\d{1,5}\s*(?:°|º|o|O|deg)\s*[CF]/iu', $nickname)
+    'passed' => preg_match('/(-?\d{1,5})\s*(?:°|º|deg)\s*([CF])/iu', $nickname, $matches)
+        && (
+            ($matches[2] === 'C' && $matches[1] >= -375 && $matches[1] <= 10000) ||
+            ($matches[2] === 'F')
+        )
 ],
         ['id'=>19,'text'=>'Nickname უნდა შეიცავდეს 💧-ს ან 🧂-ს ქიმიური ნაერთის კოდს','passed'=>collect($compounds)->contains(fn($c)=>str_contains(strtoupper($nickname),strtoupper($c)))],
         // ['id'=>20,'text'=>'Nickname უნდა შეიცავდეს საქართველოს ავტომობილების სტანდარტულ სარეგისტრაციო ნომერს','passed'=>preg_match('/[A-Z]{2}-\d{3}-[A-Z]{2}/',$nicknameUpper)],
