@@ -329,7 +329,7 @@
     <div class="nb-alert notebook-lines" style="text-align:center;">
       რაც ეკრანზე ჩანს, ყოველთვის სიმართლე არ არის
     </div>
-    <div class="nb-alert notebook-paper" style="text-align:center;">
+    <div class="nb-alert notebook-paper" style="text-align:center;"  >
       ძველი მეთოდები ბევრად საიმედოა
     </div>
 
