@@ -52,7 +52,7 @@ private function getRules(string $nickname): array
     $primes = ["11","13","17","19","23","29","31","37","41","43","47","53","59","61","67","71","73","79","83","89","97"];
 
     return [
-        ['id'=>1,'text'=>'Nickname უნდა შეიცავდეს მინიმუმ 5 სიმბოლოს','passed'=>mb_strlen($nickname)>=5],
+        // ['id'=>1,'text'=>'Nickname უნდა შეიცავდეს მინიმუმ 5 სიმბოლოს','passed'=>mb_strlen($nickname)>=5],
         // ['id'=>2,'text'=>'Nickname უნდა შეიცავდეს ციფრს','passed'=>preg_match('/\d/',$nickname)],
         // ['id'=>3,'text'=>'Nickname უნდა შეიცავდეს დიდ ასოს','passed'=>preg_match('/[A-Z]/',$nickname)],
         // ['id'=>4,'text'=>'Nickname უნდა შეიცავდეს სპეციალურ სიმბოლოს','passed'=>preg_match('/[!@#$%^&*()_\-+=\[\]{};:"\\|,.<>\/?]/',$nickname)],
@@ -81,8 +81,8 @@ private function getRules(string $nickname): array
     'text' => 'Nickname უნდა შეიცავდეს ტემპერატურას (-375°C-დან 10000°C-მდე ან °F)',
     'passed' => preg_match('/(-?\d{1,5})\s*(?:°|º|deg)\s*([CF])/iu', $nickname, $matches)
         && (
-            ($matches[2] === 'C' && $matches[1] >= -375 && $matches[1] <= 10000) ||
-            ($matches[2] === 'F')
+            (strtoupper($matches[2]) === 'C' && $matches[1] >= -375 && $matches[1] <= 10000) ||
+            (strtoupper($matches[2]) === 'F')
         )
 ],
         ['id'=>19,'text'=>'Nickname უნდა შეიცავდეს 💧-ს ან 🧂-ს ქიმიური ნაერთის კოდს','passed'=>collect($compounds)->contains(fn($c)=>str_contains(strtoupper($nickname),strtoupper($c)))],

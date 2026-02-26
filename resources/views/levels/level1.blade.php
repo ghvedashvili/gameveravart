@@ -290,7 +290,7 @@ fetchRules().then(()=>{ checkRules(); });
                     @else
                         <div class="alert alert-warning">⚠️ ეს დონე ჯერ არ არის ხელმისაწვდომი</div>
                     @endif
-                    <a href="{{ route('levels.show', ['level' => $userLevel]) }}" class="btn btn-primary">გადადით მიმდინარე დონეზე</a>
+                    <a href="{{ route('levels.show', ['level' => $userLevel]) }}" class="btn btn-primary swal-loader">გადადით მიმდინარე დონეზე</a>
                 </div>
             </div>
         </div>

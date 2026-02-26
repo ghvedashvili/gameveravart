@@ -12,24 +12,31 @@ class LevelController extends Controller
 
 
     public function show($level)
-    {
-        $user = Auth::user();
+{
+    $user = Auth::user();
 
-        // არ მისცე მომავალ ლეველზე გადასვლა
-        if ($level > $user->level) {
-            abort(403, 'This level is locked');
-        }
-
-        $question = Question::where('level', $level)->firstOrFail();
-
-        return view('levels.level', [
-            'question' => $question,
-            'level' => $level,
-            'nickname' => $user->nickname,
-            'userLevel' => $user->level,
-             'completed' => false,
-        ]);
+    if ($level > $user->level) {
+        abort(403, 'This level is locked');
     }
+
+    $question = Question::where('level', $level)->firstOrFail();
+
+    // პასუხი encode-ით გადაეცემა — inspect-ში გაუგებარი ჩანს
+    $encodedAnswer = base64_encode(
+        is_array($question->answer)
+            ? implode(' / ', $question->answer)
+            : $question->answer
+    );
+
+    return view('levels.level', [
+        'question'      => $question,
+        'level'         => $level,
+        'nickname'      => $user->nickname,
+        'userLevel'     => $user->level,
+        'completed'     => false,
+        'encodedAnswer' => $encodedAnswer, // ← encoded პასუხი
+    ]);
+}
 
     public function check(Request $request, $level)
 {
@@ -69,6 +76,7 @@ class LevelController extends Controller
         'hints' => $question->hints ?? []
     ]);
 }
+
 
 }
 

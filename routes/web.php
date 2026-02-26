@@ -114,5 +114,8 @@ Route::middleware(['auth'])->group(function () {
 
     Route::post('/level/{level}/nickname/submit', [NicknameController::class, 'submit'])
         ->whereNumber('level');
-
+Route::post('/levels/{level}/print-answer', [LevelController::class, 'printAnswer'])
+    ->whereNumber('level')
+    ->name('levels.print-answer')
+    ->middleware('auth');
 });

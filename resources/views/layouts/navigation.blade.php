@@ -165,4 +165,19 @@
         AppLoader.show(form.dataset.loaderText || 'Loading…');
     }
 });
+
     </script>
+    <script>
+document.addEventListener('click', function (event) {
+    const navbar = document.getElementById('navbarContent');
+    const toggler = document.querySelector('.navbar-toggler');
+
+    if (
+        navbar.classList.contains('show') &&
+        !navbar.contains(event.target) &&
+        !toggler.contains(event.target)
+    ) {
+        bootstrap.Collapse.getOrCreateInstance(navbar).hide();
+    }
+});
+</script>

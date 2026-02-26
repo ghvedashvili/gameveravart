@@ -147,7 +147,7 @@
                 <div class="captcha-display">{{ $standardCaptcha }}</div>
             </div>
             <div class="captcha-input-container">
-                <input type="text" class="captcha-input" id="input1" placeholder="ჩაწერეთ ზემოთ მოცემული ტექსტი">
+                <input type="text" class="captcha-input" id="input1" placeholder="ჩაწერეთ captcha">
             </div>
             <div class="captcha-footer">
                 <button type="button" class="btn-verify" onclick="verify(1)">შემოწმება</button>
@@ -157,11 +157,11 @@
         <!-- Step 2: Selection CAPTCHA (moved from step3) -->
         <div class="captcha-challenge" id="step2">
             <div class="captcha-display-container">
-                 <span class="captcha-label text-center"><i class="bi bi-info-circle text-primary"> არ არსებობს დაფარული, რომ არ გამოჩნდეს, და არც რამ სადუმლო რომ არ გამჟღავნდეს.</i></span>
+                 <span class="captcha-label text-center"><i class="bi bi-info-circle text-primary"> არ არსებობს დაფარული, რომ არ გამოჩნდეს, და არც რამ საიდუმლო რომ არ გამჟღავნდეს.</i></span>
                 <div class="captcha-display selectable" id="selectionDisplay">********</div>
             </div>
             <div class="captcha-input-container">
-                <input type="text" class="captcha-input" id="input2" placeholder="ჩაწერეთ გამოავლინილი ტექსტი">
+                <input type="text" class="captcha-input" id="input2" placeholder="ჩაწერეთ captcha">
             </div>
             <div class="captcha-footer">
                 <button type="button" class="btn-verify" onclick="verify(2)">შემოწმება</button>
@@ -175,7 +175,7 @@
                 <div class="captcha-display">{{ $georgianCaptcha }}</div>
             </div>
             <div class="captcha-input-container">
-                <input type="text" class="captcha-input" id="input3" placeholder="ჩაწერეთ ზემოთ მოცემული ტექსტი">
+                <input type="text" class="captcha-input" id="input3" placeholder="ჩაწერეთ captcha">
             </div>
             <div class="captcha-footer">
                 <button type="button" class="btn-verify" onclick="verify(3)">შემოწმება</button>
@@ -189,7 +189,7 @@
                 <div class="captcha-display" id="rotatingDisplay">{{ $rotatingCaptcha }}</div>
             </div>
             <div class="captcha-input-container">
-                <input type="text" class="captcha-input" id="input4" placeholder="ჩაწერეთ მიმდინარე ტექსტი">
+                <input type="text" class="captcha-input" id="input4" placeholder="ჩაწერეთ captcha">
             </div>
             <div class="captcha-footer">
                 <button type="button" class="btn-verify" onclick="verify(4)">შემოწმება</button>
