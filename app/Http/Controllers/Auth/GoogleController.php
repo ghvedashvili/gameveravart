@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Auth;
 use App\Http\Controllers\Controller;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
+use GuzzleHttp\Client;
 use Laravel\Socialite\Facades\Socialite;
 use App\Providers\RouteServiceProvider;
 
@@ -17,7 +18,8 @@ class GoogleController extends Controller
 
     public function handleGoogleCallback()
     {
-        $googleUser = Socialite::driver('google')->stateless()->user();
+        $guzzle = new Client(['verify' => 'C:\php\cacert.pem']);
+        $googleUser = Socialite::driver('google')->setHttpClient($guzzle)->stateless()->user();
 
         // ვამოწმებთ, თუ მომხმარებელი უკვე არსებობს
         $user = User::firstOrCreate(
