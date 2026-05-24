@@ -18,7 +18,8 @@ class GoogleController extends Controller
 
     public function handleGoogleCallback()
     {
-        $guzzle = new Client(['verify' => 'C:\php\cacert.pem']);
+        $verify = app()->isProduction() ? true : 'C:\php\cacert.pem';
+        $guzzle = new Client(['verify' => $verify]);
         $googleUser = Socialite::driver('google')->setHttpClient($guzzle)->stateless()->user();
 
         // ვამოწმებთ, თუ მომხმარებელი უკვე არსებობს
