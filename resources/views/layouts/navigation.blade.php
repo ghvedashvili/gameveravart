@@ -51,7 +51,7 @@
     background: none;
     border: none;
     color: rgba(255,255,255,0.75);
-    font-size: 1rem;
+    font-size: 1.1rem;
     padding: 6px 12px;
     cursor: pointer;
     display: flex;
@@ -78,12 +78,14 @@
     border-top: 1px solid #2a2a2a;
     overflow: hidden;
     max-height: 0;
-    transition: max-height 0.3s ease, padding 0.3s ease;
+    transition: max-height 0.3s ease;
+    display: flex;
+    align-items: center;
     padding: 0 24px;
 }
 .stepper-panel.open {
-    max-height: 72px;
-    padding: 10px 24px;
+    max-height: 52px;
+    height: 52px;
 }
 
 .stepper-track {
@@ -91,6 +93,7 @@
     align-items: center;
     justify-content: center;
     gap: 0;
+    width: 100%;
 }
 
 /* ── dots ── */
@@ -164,7 +167,7 @@
 .nav-link-item {
     color: rgba(255,255,255,0.75);
     text-decoration: none;
-    font-size: 0.95rem;
+    font-size: 1.05rem;
     padding: 6px 8px;
     border-radius: 4px;
     transition: color 0.15s, background 0.15s;
@@ -179,7 +182,7 @@
 
 .nav-nickname {
     color: rgba(255,255,255,0.75);
-    font-size: 0.95rem;
+    font-size: 1.05rem;
     padding: 6px 8px;
     border-radius: 4px;
     cursor: default;
@@ -196,14 +199,14 @@
 
 .nav-hints {
     color: #f39c12;
-    font-size: 0.92rem;
+    font-size: 1rem;
     padding: 4px 8px;
     cursor: default;
 }
 
 .nav-stat {
     color: rgba(255,255,255,0.4);
-    font-size: 0.88rem;
+    font-size: 0.95rem;
     padding: 4px 6px;
     cursor: default;
     letter-spacing: 0.02em;
@@ -255,7 +258,7 @@
 .nav-collapse-item {
     color: rgba(255,255,255,0.75);
     text-decoration: none;
-    font-size: 1rem;
+    font-size: 1.1rem;
     padding: 10px 20px;
     display: flex;
     align-items: center;
@@ -270,7 +273,7 @@
     align-items: center;
     gap: 8px;
     color: rgba(255,255,255,0.8);
-    font-size: 1rem;
+    font-size: 1.1rem;
     padding: 6px 10px;
     border-radius: 4px;
     text-decoration: none;
