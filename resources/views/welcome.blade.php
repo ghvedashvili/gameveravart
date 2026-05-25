@@ -240,7 +240,7 @@
            data-loader
            data-loader-text="შესვლა...">
             <img src="https://www.svgrepo.com/show/475656/google-color.svg" alt="G">
-            <span id="btnText"></span>
+            Sign in with Google
         </a>
     </div>
 </div>
@@ -313,7 +313,6 @@
 
     const scrambler  = new TextScramble(document.getElementById('titleEl'));
     const scrambler2 = new TextScramble(document.getElementById('subtitleEl'));
-    const scrambler3 = new TextScramble(document.getElementById('btnText'));
     const subSyms    = '⠁⠂⠃♠♣♥♔♕•-±×ᚠᚢあいう←↑→'.split('');
     const enterBtn   = document.getElementById('enterBtn');
 
@@ -323,9 +322,7 @@
         scrambler.setText('VERAVART GAME', symSets).then(() => {
             scrambler2.setText('by ghvedashvili', subSyms).then(() => {
                 enterBtn.classList.add('visible');
-                scrambler3.setText('შემოგვიერთდი', subSyms).then(() => {
-                    setTimeout(animate, 15000);
-                });
+                setTimeout(animate, 15000);
             });
         });
     }
