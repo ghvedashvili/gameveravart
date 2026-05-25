@@ -240,7 +240,7 @@
     padding: 4px 8px;
     cursor: pointer;
     color: rgba(255,255,255,0.7);
-    font-size: 1rem;
+    font-size: 1.5rem;
     line-height: 1;
 }
 
