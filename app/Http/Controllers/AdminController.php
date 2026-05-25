@@ -19,4 +19,11 @@ class AdminController extends Controller
         $user->update(['role' => $request->role]);
         return response()->json(['success' => true, 'role' => $user->role]);
     }
+
+    public function updateLevel(Request $request, User $user)
+    {
+        $request->validate(['level' => 'required|integer|min:1']);
+        $user->update(['level' => $request->level]);
+        return response()->json(['success' => true, 'level' => $user->level]);
+    }
 }

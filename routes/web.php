@@ -55,6 +55,7 @@ Route::get('/auth/google/callback', [GoogleController::class, 'handleGoogleCallb
 Route::middleware(['auth', 'admin'])->group(function () {
     Route::get('/admin', [AdminController::class, 'index'])->name('admin.panel');
     Route::post('/admin/users/{user}/role', [AdminController::class, 'updateRole'])->name('admin.updateRole');
+    Route::post('/admin/users/{user}/level', [AdminController::class, 'updateLevel'])->name('admin.updateLevel');
 });
 
 Route::middleware(['auth'])->group(function () {

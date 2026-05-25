@@ -114,7 +114,11 @@
                     </td>
                     <td><code>{{ \Illuminate\Support\Str::limit($user->nickname ?? '—', 24) }}</code></td>
                     <td class="text-center">
-                        <span class="badge bg-primary rounded-pill">{{ $user->level }}</span>
+                        <span class="badge bg-primary rounded-pill level-badge-{{ $user->id }}"
+                              style="cursor:pointer;"
+                              onclick="changeLevel({{ $user->id }}, '{{ addslashes($user->name) }}', {{ $user->level }})">
+                            {{ $user->level }}
+                        </span>
                     </td>
                     <td class="text-center">
                         <span class="badge role-badge-{{ $user->id }} {{ $user->role === 'admin' ? 'bg-danger' : 'bg-secondary' }}">
@@ -148,7 +152,11 @@
                 <div class="user-card-email">{{ $user->email }}</div>
                 <div class="user-card-nickname">{{ $user->nickname ?? '—' }}</div>
                 <div class="user-card-meta">
-                    <span class="badge bg-primary rounded-pill">Lvl {{ $user->level }}</span>
+                    <span class="badge bg-primary rounded-pill level-badge-{{ $user->id }}"
+                          style="cursor:pointer;"
+                          onclick="changeLevel({{ $user->id }}, '{{ addslashes($user->name) }}', {{ $user->level }})">
+                        Lvl {{ $user->level }}
+                    </span>
                     <span class="badge role-badge-{{ $user->id }} {{ $user->role === 'admin' ? 'bg-danger' : 'bg-secondary' }}">
                         {{ $user->role }}
                     </span>
@@ -169,6 +177,47 @@
 
 <script>
 const CSRF = document.querySelector('meta[name="csrf-token"]').content;
+
+function changeLevel(userId, userName, currentLevel) {
+    Swal.fire({
+        title: 'ლეველის შეცვლა',
+        html: `<b>${userName}</b> — მიმდინარე ლეველი: <span class="badge bg-primary">${currentLevel}</span><br><br>
+               <input id="swal-level-input" type="number" min="1" value="${currentLevel}"
+                      class="swal2-input" style="max-width:120px;text-align:center;">`,
+        showCancelButton: true,
+        confirmButtonText: '✅ შენახვა',
+        cancelButtonText: 'გაუქმება',
+        confirmButtonColor: '#0d6efd',
+        focusConfirm: false,
+        preConfirm: () => {
+            const val = parseInt(document.getElementById('swal-level-input').value);
+            if (!val || val < 1) {
+                Swal.showValidationMessage('ლეველი უნდა იყოს 1 ან მეტი');
+                return false;
+            }
+            return val;
+        }
+    }).then(result => {
+        if (!result.isConfirmed) return;
+        const newLevel = result.value;
+
+        fetch(`/admin/users/${userId}/level`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': CSRF },
+            body: JSON.stringify({ level: newLevel }),
+        })
+        .then(r => r.json())
+        .then(data => {
+            if (!data.success) return;
+            document.querySelectorAll(`.level-badge-${userId}`).forEach(badge => {
+                badge.textContent = badge.textContent.includes('Lvl')
+                    ? `Lvl ${data.level}`
+                    : `${data.level}`;
+            });
+            Swal.fire({ icon: 'success', title: 'შეცვლილია!', text: `${userName} → ლეველი ${data.level}`, timer: 1600, showConfirmButton: false });
+        });
+    });
+}
 
 function changeRole(userId, userName, currentRole) {
     const newRole = currentRole === 'admin' ? 'gamer' : 'admin';
