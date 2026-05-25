@@ -1,31 +1,34 @@
 @if($userLevel == $level)
 
 <style>
- 
+  body { background: #F1CC38; }
 
-  html, body {
-    height: 100%;
-    overflow: hidden;
-    touch-action: none;
+  #level6-wrapper {
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    padding-top: var(--nav-h, 56px);
+    transition: padding-top 0.3s ease;
     background: #F1CC38;
-
+    background-image: radial-gradient(circle, rgba(255,255,255,0.3) 1px, transparent 1px);
+    background-size: 24px 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    z-index: 0;
   }
 
   .folder-scene {
     perspective: 800px;
-    /* width: 340px;
-    height: 350px; */
     position: relative;
     display: flex;
     align-items: flex-end;
     justify-content: center;
-    margin: 0 auto;
-    /* ვერტიკალური ცენტრი */
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
+    transform-origin: center center;
   }
+
+  @media (max-width: 480px) { .folder-scene { transform: scale(0.78); } }
+  @media (max-width: 360px) { .folder-scene { transform: scale(0.62); } }
 
   .folder {
     width: 340px;
@@ -103,8 +106,9 @@
     display: none;
     position: fixed;
     inset: 0;
-    background: rgba(0,0,0,0.4);
-    z-index: 1000;
+    padding-top: var(--nav-h, 56px);
+    background: rgba(0,0,0,0.45);
+    z-index: 1050;
     align-items: center;
     justify-content: center;
   }
@@ -120,12 +124,14 @@
   }
 
   .paper-expanded {
-    width: 320px;
+    width: min(360px, 92vw);
+    max-height: calc(100svh - var(--nav-h, 56px) - 32px);
+    overflow-y: auto;
     background: #fffef8;
     border: 1px solid #ddd;
     border-radius: 3px;
     box-shadow: 4px 8px 40px rgba(0,0,0,0.3);
-    padding: 40px 36px 36px;
+    padding: 40px 28px 28px;
     position: relative;
     transform: rotate(-1deg);
     animation: fo-unfold 400ms cubic-bezier(0.34, 1.56, 0.64, 1);
@@ -305,16 +311,14 @@
 </style>
 
 {{-- პასუხი encoded სახით, უჩინარია --}}
-<div
-    id="fo-answer-box"
-    data-a="{{ $encodedAnswer }}"
-    style="display:none; font-size:20px; font-weight:bold; color:#000;"
-></div>
+<div id="fo-answer-box" data-a="{{ $encodedAnswer }}" style="display:none;"></div>
 
-{{-- საქაღალდის სცენა --}}
-<div class="folder-scene">
-  <div class="folder">
-    <div class="folder-paper" id="fo-paper"></div>
+<div id="level6-wrapper">
+  {{-- საქაღალდის სცენა --}}
+  <div class="folder-scene">
+    <div class="folder">
+      <div class="folder-paper" id="fo-paper"></div>
+    </div>
   </div>
 </div>
 
