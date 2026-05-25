@@ -405,12 +405,11 @@ function toggleStepper() {
     const nav    = document.querySelector('nav');
     const isOpen = panel.classList.contains('open');
 
+    // გავზომოთ ᲧᲕᲔᲚᲐᲤᲔᲠᲘ class-ის შეცვლამდე
+    const navH   = nav.offsetHeight;
     const panelH = isOpen ? panel.offsetHeight : 0;
 
-    if (isOpen) {
-        // hide tooltips before collapsing
-        panel.style.overflow = 'hidden';
-    }
+    if (isOpen) panel.style.overflow = 'hidden';
 
     panel.classList.toggle('open', !isOpen);
     toggle.classList.toggle('active', !isOpen);
@@ -425,7 +424,7 @@ function toggleStepper() {
             panel.style.overflow = 'visible';
         }, 310);
     } else {
-        const h = (nav.offsetHeight - panelH) + 'px';
+        const h = (navH - panelH) + 'px';
         document.body.style.paddingTop = h;
         document.documentElement.style.setProperty('--nav-h', h);
     }
@@ -445,11 +444,15 @@ document.addEventListener('click', e => {
     const toggle = document.getElementById('levelsToggle');
     if (!panel || !toggle) return;
     if (!panel.contains(e.target) && !toggle.contains(e.target)) {
+        if (!panel.classList.contains('open')) return;
+        const nav    = document.querySelector('nav');
+        const navH   = nav.offsetHeight;
+        const panelH = panel.offsetHeight;
         panel.style.overflow = 'hidden';
         panel.classList.remove('open');
         toggle.classList.remove('active');
-        const nav = document.querySelector('nav');
-        const h = nav.offsetHeight + 'px';
+        const h = (navH - panelH) + 'px';
+        document.body.style.transition = 'padding-top 0.3s ease';
         document.body.style.paddingTop = h;
         document.documentElement.style.setProperty('--nav-h', h);
     }
