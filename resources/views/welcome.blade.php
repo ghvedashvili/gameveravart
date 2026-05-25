@@ -95,8 +95,8 @@
         <div class="onboard-title">გამარჯობა, {{ auth()->user()->name }}! 👋</div>
         <p class="onboard-text">
             გვიხარია, რომ შემოგვიერთდი.<br>
-            სათამაშოდ პირველ რიგში<br>
-            საჭიროა <strong>ნიქნეიმის</strong> შექმნა.
+            თამაშის დასაწყებად აუცილებელი პირობაა რომ <br>
+            საკუთარი <strong>nickname</strong> შექმნათ.
         </p>
         <a href="{{ route('levels.show', 1) }}" class="onboard-btn" data-loader data-loader-text="Loading...">
             ნიქნეიმის შექმნა →
