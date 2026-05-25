@@ -59,7 +59,7 @@ private function getRules(string $nickname): array
         ['id'=>9,'text'=>'Nickname უნდა შეიცავდეს ემოჯის','passed'=>preg_match('/[\x{1F300}-\x{1F9FF}]/u',$nickname)],
         ['id'=>10,'text'=>'Nickname უნდა შეიცავდეს რომელიმე ბირთვული სახელმწიფოს ISO კოდს','passed'=>collect($nuclearCodes)->contains(fn($c)=>str_contains($nicknameUpper,$c))],
         ['id'=>11,'text'=>'Nickname უნდა შეიცავდეს რომაულ ციფრს (მინიმუმ 3 სიმბოლო)','passed'=>preg_match('/[IVXLCDM]{3,}/i',$nickname)],
-        ['id'=>13,'text'=>'ყოველი მე-4 ასო უნდა იყოს დიდი','passed'=>function() use($nickname){
+        ['id'=>13,'text'=>'Nickname-ში ყოველი მე-4 ასო უნდა იყოს დიდი','passed'=>function() use($nickname){
             $letters = preg_replace('/[^a-zA-Z]/','',$nickname);
             if(strlen($letters)<4) return false;
             for($i=3;$i<strlen($letters);$i+=4){
