@@ -3,16 +3,21 @@
 @section('content')
 
 <style>
-    body{
-         background: #960612;
+    body {
+        background: #c0000a;
     }
     #level-wrapper {
-        background: #EB191E;
-        /* box-shadow: inset 0 0 1000px 0px #960612; */
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        padding-top: var(--nav-h, 56px);
+        transition: padding-top 0.3s ease;
+        background: #d4000b;
+        background-image: radial-gradient(circle, rgba(255,255,255,0.22) 1px, transparent 1px);
+        background-size: 24px 24px;
         overflow: hidden;
-        width: 100%;
-        height: 100%;
-        min-height: 100svh;
         display: flex;
         flex-direction: column;
         justify-content: center;
@@ -20,12 +25,12 @@
         font-family: Arial, sans-serif;
         color: white;
         touch-action: none;
-        position: relative;
+        z-index: 0;
     }
 
     .title {
         position: absolute;
-        top: 20px;
+        top: calc(var(--nav-h, 56px) + 36px);
         left: 0;
         width: 100%;
         text-align: center;
@@ -36,6 +41,7 @@
         letter-spacing: 2px;
         margin-bottom: 20px;
         z-index: 10;
+        transition: top 0.3s ease;
     }
 
     .instructions {
@@ -209,13 +215,6 @@ document.addEventListener('DOMContentLoaded', function() {
         el.style.backgroundImage = `url('${topUrl}')`;
     });
 
-    // navbar სიმაღლის ავტომატური გამოთვლა
-    const navbar = document.querySelector('nav, .navbar, header');
-    if (navbar) {
-        const navH = navbar.offsetHeight;
-        document.getElementById('level-wrapper').style.minHeight = `calc(100svh - ${navH}px)`;
-        document.getElementById('level-wrapper').style.height = `calc(100svh - ${navH}px)`;
-    }
 
     const canContainer = document.getElementById('canContainer');
     const cocaCola = document.getElementById('cocaCola');

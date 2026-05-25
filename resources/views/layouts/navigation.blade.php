@@ -419,11 +419,15 @@ function toggleStepper() {
 
     if (!isOpen) {
         setTimeout(() => {
-            document.body.style.paddingTop = nav.offsetHeight + 'px';
+            const h = nav.offsetHeight + 'px';
+            document.body.style.paddingTop = h;
+            document.documentElement.style.setProperty('--nav-h', h);
             panel.style.overflow = 'visible';
         }, 310);
     } else {
-        document.body.style.paddingTop = (nav.offsetHeight - panelH) + 'px';
+        const h = (nav.offsetHeight - panelH) + 'px';
+        document.body.style.paddingTop = h;
+        document.documentElement.style.setProperty('--nav-h', h);
     }
 }
 
@@ -445,7 +449,9 @@ document.addEventListener('click', e => {
         panel.classList.remove('open');
         toggle.classList.remove('active');
         const nav = document.querySelector('nav');
-        document.body.style.paddingTop = nav.offsetHeight + 'px';
+        const h = nav.offsetHeight + 'px';
+        document.body.style.paddingTop = h;
+        document.documentElement.style.setProperty('--nav-h', h);
     }
 });
 
@@ -454,4 +460,9 @@ document.addEventListener('submit', e => {
     if (form) AppLoader.show(form.dataset.loaderText || 'Loading…');
 });
 
+// page load-ზე --nav-h დასეტვა
+(function() {
+    const nav = document.querySelector('nav');
+    if (nav) document.documentElement.style.setProperty('--nav-h', nav.offsetHeight + 'px');
+})();
 </script>
