@@ -187,7 +187,7 @@
 
     <div class="instructions"></div>
 
-    <form id="answerForm" class="d-flex justify-content-center gap-2 mb-4">
+    <form id="answerForm" class="d-flex justify-content-center gap-2 mb-4" style="position:relative;z-index:100;">
     @csrf
     <input type="text" class="form-control w-auto" id="answer" name="answer">
     <button type="submit" class="btn btn-primary">Submit</button>
