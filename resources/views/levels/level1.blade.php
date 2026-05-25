@@ -123,16 +123,20 @@ const rulesContainer  = document.getElementById('rulesContainer');
 const charCounter     = document.getElementById('charCounter');
 
 function updateHighlight(text) {
+    const rule27Active = activeRuleIds.includes(27);
+
     const counts = {};
-    [...text].forEach(c => {
-        if (/[a-zA-Z]/.test(c)) counts[c.toLowerCase()] = (counts[c.toLowerCase()] || 0) + 1;
-    });
+    if (rule27Active) {
+        [...text].forEach(c => {
+            if (/[a-zA-Z]/.test(c)) counts[c.toLowerCase()] = (counts[c.toLowerCase()] || 0) + 1;
+        });
+    }
     const dups = new Set(Object.keys(counts).filter(l => counts[l] > 1));
 
     const html = [...text].map(c => {
         if (c === '\n') return '\n';
         const safe = c.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
-        if (/[a-zA-Z]/.test(c) && dups.has(c.toLowerCase())) {
+        if (rule27Active && /[a-zA-Z]/.test(c) && dups.has(c.toLowerCase())) {
             return `<span style="color:#e74c3c;font-weight:700;">${safe}</span>`;
         }
         return `<span style="color:#212529;">${safe}</span>`;
@@ -232,37 +236,9 @@ async function submitNickname() {
 
 // RENDER captcha
 function renderCaptchaRuleHTML(r) {
-  const prefix = 'აკრიფე ეს ქაფთჩა: "';
-  const suffix = '"';
-  if (!r.text.startsWith(prefix) || !r.text.endsWith(suffix)) return r.text;
-
-  const captcha = r.text.slice(prefix.length, -1);
-  let lettersHTML = '';
-  [...captcha].forEach((char, i) => {
-    const hue = Math.floor(Math.random() * 360);
-    const rot = Math.floor(Math.random() * 360);
-    const tx = (Math.random()*10-5).toFixed(1);
-    const ty = (Math.random()*10-5).toFixed(1);
-    const angle = Math.floor(Math.random() * 360);
-    lettersHTML += `<span class="captcha-letter"
-      style="
-        color:hsl(${hue},70%,50%);
-        transform:rotate(${rot}deg) translate(${tx}px,${ty}px);
-        background:repeating-linear-gradient(
-          ${angle}deg,
-          hsla(${hue},70%,50%,.15),
-          hsla(${hue},70%,50%,.15) 1px,
-          hsla(${hue+40},70%,50%,.1) 3px
-        );
-        border:1px solid hsla(${hue},70%,50%,.2);
-      ">
-      ${char}</span>`;
-  });
-  return `
-    აკრიფე ეს ქაფთჩა:
-    <span class="captcha-container">
-      "<span class="captcha-letters">${lettersHTML}</span>"
-    </span>`;
+  return `ნიკნეიმი უნდა შეიცავდეს ქაფთჩას:<br>
+    <img src="/img/captcha.png" alt="captcha"
+         style="max-width:180px;margin-top:6px;border-radius:6px;display:block;">`;
 }
 
 // CHECK rules
@@ -316,6 +292,8 @@ function renderRules() {
       </div>
     `);
   });
+
+  updateHighlight(nicknameInput.value);
 }
 
 // CHARACTER COUNTER
