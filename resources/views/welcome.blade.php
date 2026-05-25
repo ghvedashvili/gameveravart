@@ -255,66 +255,60 @@
     class TextScramble {
         constructor(el) {
             this.el = el;
-            this.update = this.update.bind(this);
         }
         setText(newText, symbolSets) {
             const oldText = this.el.innerText;
             const length  = Math.max(oldText.length, newText.length);
             const promise = new Promise(resolve => this.resolve = resolve);
+            const now = performance.now();
             this.queue = [];
             for (let i = 0; i < length; i++) {
                 const syms = Array.isArray(symbolSets)
                     ? symbolSets[i % symbolSets.length]
                     : symbolSets;
-                this.queue.push({
-                    from:  oldText[i] || '',
-                    to:    newText[i] || '',
-                    start: Math.floor(Math.random() * 90),
-                    end:   Math.floor(Math.random() * 90) + Math.floor(Math.random() * 90) + 40,
-                    syms
-                });
+                const startAt  = now + i * 45 + Math.random() * 15;
+                const settleAt = startAt + 350 + Math.random() * 150;
+                this.queue.push({ from: oldText[i] || '', to: newText[i] || '', startAt, settleAt, syms, char: '', lastSwap: 0 });
             }
             cancelAnimationFrame(this.frameRequest);
-            this.frame = 0;
-            this.update();
+            this.frameRequest = requestAnimationFrame(t => this.update(t));
             return promise;
         }
-        update() {
+        update(now) {
             let output = '', complete = 0;
             for (let i = 0; i < this.queue.length; i++) {
-                let { from, to, start, end, char, syms } = this.queue[i];
-                if (this.frame >= end) {
+                const q = this.queue[i];
+                if (now >= q.settleAt) {
                     complete++;
-                    output += to;
-                } else if (this.frame >= start) {
-                    if (!char || Math.random() < 0.28) {
-                        char = syms[Math.floor(Math.random() * syms.length)];
-                        this.queue[i].char = char;
+                    output += q.to;
+                } else if (now >= q.startAt) {
+                    if (!q.char || now - q.lastSwap > 75) {
+                        q.char     = q.syms[Math.floor(Math.random() * q.syms.length)];
+                        q.lastSwap = now;
                     }
-                    output += `<span class="dud">${char}</span>`;
+                    output += `<span class="dud">${q.char}</span>`;
                 } else {
-                    output += from;
+                    output += q.from;
                 }
             }
             this.el.innerHTML = output;
             if (complete === this.queue.length) {
                 this.resolve();
             } else {
-                this.frameRequest = requestAnimationFrame(this.update);
-                this.frame++;
+                this.frameRequest = requestAnimationFrame(t => this.update(t));
             }
         }
     }
 
     const symSets = [
-        '⠁⠂⠃⠄⠅⠆⠇⠈⠉⠊⠋⠌⠍⠎⠏⠐⠑⠒⠓⠔⠕⠖⠗⠘⠙⠚⠛⠜⠝⠞⠟⠠⠡⠢⠣⠤⠥⠦⠧⠨⠩⠪⠫⠬⠭⠮⠯',  // V — braille
-        '♠♣♥♦♤♧♡♢',                                                             // E — cards
-        '♔♕♖♗♘♙♚♛♜♝♞♟',                                                         // R — chess
-        '•-·−',                                                                  // A — morse
-        '±×÷≈≠≤≥∞√∆∂∫∑∏∈∉',                                                     // V — math
-        'ᚠᚢᚦᚨᚱᚲᚷᚹᚺᚾᛁᛃᛇᛈᛉᛋᛏᛒᛖᛗᛚᛜᛞ',                                             // A — runes
-        'あいうえおかきくけこさしすせそアイウエオカキクケコ',                        // R — asian
-        '←↑→↓↔↕⇐⇑⇒⇓⇔➔➜➤➝',                                                     // T — arrows
+        '⠁⠂⠃⠄⠅⠆⠇⠈⠉⠊⠋⠌⠍⠎⠏⠐⠑⠒⠓⠔⠕⠖⠗⠘⠙⠚⠛⠜⠝⠞⠟⠠⠡⠢⠣⠤⠥⠦⠧⠨⠩⠪⠫⠬⠭⠮⠯',
+        '♠♣♥♦♤♧♡♢',
+        '♔♕♖♗♘♙♚♛♜♝♞♟',
+        '•-·−',
+        '±×÷≈≠≤≥∞√∆∂∫∑∏∈∉',
+        'ᚠᚢᚦᚨᚱᚲᚷᚹᚺᚾᛁᛃᛇᛈᛉᛋᛏᛒᛖᛗᛚᛜᛞ',
+        'あいうえおかきくけこさしすせそアイウエオカキクケコ',
+        '←↑→↓↔↕⇐⇑⇒⇓⇔➔➜➤➝',
     ];
 
     const scrambler  = new TextScramble(document.getElementById('titleEl'));
@@ -327,13 +321,13 @@
         scrambler2.setText('', subSyms);
         scrambler.setText('VERAVART GAME', symSets).then(() => {
             scrambler2.setText('by ghvedashvili', subSyms).then(() => {
-                setTimeout(() => enterBtn.classList.add('visible'), 2500);
-                setTimeout(animate, 15000);
+                setTimeout(() => enterBtn.classList.add('visible'), 1800);
+                setTimeout(animate, 14000);
             });
         });
     }
 
-    setTimeout(animate, 600);
+    setTimeout(animate, 400);
 </script>
 
 @endauth
