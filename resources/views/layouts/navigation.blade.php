@@ -5,6 +5,11 @@
     $levels = Question::select('level')->distinct()->orderBy('level')->get();
     $activeLevel = auth()->user() ? auth()->user()->level : 1;
 
+    // level of the currently loaded page (e.g. /levels/3 → 3)
+    $currentPageLevel = (request()->segment(1) === 'levels' && is_numeric(request()->segment(2)))
+        ? (int) request()->segment(2)
+        : null;
+
     if (auth()->check()) {
         $myLevel      = auth()->user()->level;
         $totalPlayers = User::count();
@@ -46,7 +51,7 @@
     background: none;
     border: none;
     color: rgba(255,255,255,0.75);
-    font-size: 0.875rem;
+    font-size: 1rem;
     padding: 6px 12px;
     cursor: pointer;
     display: flex;
@@ -90,8 +95,8 @@
 
 /* ── dots ── */
 .stepper-dot {
-    width: 10px;
-    height: 10px;
+    width: 14px;
+    height: 14px;
     border-radius: 50%;
     flex-shrink: 0;
     transition: transform 0.15s, box-shadow 0.15s;
@@ -101,10 +106,26 @@
 }
 .stepper-dot:hover { transform: scale(1.6) !important; }
 
-.dot-done    { background: #2ecc71; box-shadow: 0 0 0 2px rgba(46,204,113,0.2); }
-.dot-current { background: #f39c12; box-shadow: 0 0 0 3px rgba(243,156,18,0.3); transform: scale(1.3); }
+.dot-done    { background: #2ecc71; box-shadow: 0 0 0 3px rgba(46,204,113,0.2); }
+.dot-current { background: #f39c12; box-shadow: 0 0 0 4px rgba(243,156,18,0.3); transform: scale(1.3); }
 .dot-locked  { background: transparent; border: 2px solid #3a3a3a; cursor: not-allowed; }
 .dot-locked:hover { transform: none !important; }
+
+.dot-v {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    pointer-events: none;
+}
+.dot-v::after {
+    content: '';
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: #fff;
+}
 
 /* ── dot hover tooltip ── */
 .stepper-dot {
@@ -143,7 +164,7 @@
 .nav-link-item {
     color: rgba(255,255,255,0.75);
     text-decoration: none;
-    font-size: 0.85rem;
+    font-size: 0.95rem;
     padding: 6px 8px;
     border-radius: 4px;
     transition: color 0.15s, background 0.15s;
@@ -156,16 +177,33 @@
 .nav-link-item.text-danger { color: #e74c3c; }
 .nav-link-item.text-danger:hover { color: #ff6b6b; background: rgba(231,76,60,0.1); }
 
+.nav-nickname {
+    color: rgba(255,255,255,0.75);
+    font-size: 0.95rem;
+    padding: 6px 8px;
+    border-radius: 4px;
+    cursor: default;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    white-space: nowrap;
+    transition: color 0.15s, background 0.15s;
+}
+.nav-nickname:hover { color: #fff; background: rgba(255,255,255,0.08); }
+.nick-full { display: none; }
+.nav-nickname:hover .nick-short { display: none; }
+.nav-nickname:hover .nick-full  { display: inline; }
+
 .nav-hints {
     color: #f39c12;
-    font-size: 0.82rem;
+    font-size: 0.92rem;
     padding: 4px 8px;
     cursor: default;
 }
 
 .nav-stat {
     color: rgba(255,255,255,0.4);
-    font-size: 0.78rem;
+    font-size: 0.88rem;
     padding: 4px 6px;
     cursor: default;
     letter-spacing: 0.02em;
@@ -217,7 +255,7 @@
 .nav-collapse-item {
     color: rgba(255,255,255,0.75);
     text-decoration: none;
-    font-size: 0.875rem;
+    font-size: 1rem;
     padding: 10px 20px;
     display: flex;
     align-items: center;
@@ -232,7 +270,7 @@
     align-items: center;
     gap: 8px;
     color: rgba(255,255,255,0.8);
-    font-size: 0.875rem;
+    font-size: 1rem;
     padding: 6px 10px;
     border-radius: 4px;
     text-decoration: none;
@@ -268,8 +306,8 @@
             @auth
             {{-- Desktop only --}}
             <div class="d-none d-md-flex align-items-center gap-1">
-                <span class="nav-link-item" style="cursor:default;">
-                    👤 {{ auth()->user()->nickname }}
+                <span class="nav-nickname" title="{{ auth()->user()->nickname }}">
+                    👤 <span class="nick-short">{{ \Illuminate\Support\Str::limit(auth()->user()->nickname, 5, '…') }}</span><span class="nick-full">{{ auth()->user()->nickname }}</span>
                 </span>
 
                 <span class="nav-hints">💡 {{ $myHints }}</span>
@@ -319,7 +357,7 @@
 
                 <a @if(!$isLocked) href="{{ route('levels.show', $lvl->level) }}" data-loader data-loader-text="Loading…" @else href="#" @endif
                    class="stepper-dot {{ $isCompleted ? 'dot-done' : ($isCurrent ? 'dot-current' : 'dot-locked') }}"
-                   data-count="{{ $cnt }}"></a>
+                   data-count="{{ $cnt }}">@if($currentPageLevel === $lvl->level)<span class="dot-v"></span>@endif</a>
 
                 @if(!$isLast)
                     <div class="stepper-line {{ $isCompleted ? 'line-done' : '' }}"></div>
@@ -330,8 +368,8 @@
 
     {{-- ── mobile collapse menu ── --}}
     <div class="nav-collapse d-md-none" id="mobileNav">
-        <span class="nav-collapse-item" style="cursor:default;color:#aaa;">
-            👤 {{ auth()->user()->nickname }}
+        <span class="nav-collapse-item nav-nickname" style="color:#aaa;">
+            👤 <span class="nick-short">{{ \Illuminate\Support\Str::limit(auth()->user()->nickname, 5, '…') }}</span><span class="nick-full">{{ auth()->user()->nickname }}</span>
         </span>
         <span class="nav-collapse-item" style="cursor:default;color:#666;padding-top:0;">
             💡 {{ $myHints }} hints
