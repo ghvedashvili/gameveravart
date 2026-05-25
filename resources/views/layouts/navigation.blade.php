@@ -7,12 +7,12 @@
 
     if (auth()->check()) {
         $myLevel      = auth()->user()->level;
-        $myId         = auth()->user()->id;
         $totalPlayers = User::count();
-        $aheadCount   = User::where('level', '>', $myLevel)->count();
-        $sameCount    = User::where('level', $myLevel)->where('id', '!=', $myId)->count();
-        $belowCount   = User::where('level', '<', $myLevel)->count();
         $myHints      = auth()->user()->hints ?? 0;
+
+        // % of players at or above current level
+        $atOrAbove   = User::where('level', '>=', $myLevel)->count();
+        $topPercent  = $totalPlayers > 0 ? round($atOrAbove / $totalPlayers * 100) : 100;
 
         // count users at or above each level (1 query)
         $rawCounts = User::selectRaw('level, count(*) as cnt')->groupBy('level')->pluck('cnt', 'level')->toArray();
@@ -163,6 +163,34 @@
     cursor: default;
 }
 
+.nav-stat {
+    color: rgba(255,255,255,0.4);
+    font-size: 0.78rem;
+    padding: 4px 6px;
+    cursor: default;
+    letter-spacing: 0.02em;
+    position: relative;
+}
+.nav-stat::after {
+    content: attr(data-tooltip);
+    position: absolute;
+    top: calc(100% + 7px);
+    right: 0;
+    background: #1a1a1a;
+    color: #ccc;
+    font-size: 11px;
+    white-space: nowrap;
+    padding: 5px 10px;
+    border-radius: 5px;
+    border: 1px solid #333;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.15s;
+    z-index: 9999;
+}
+.nav-stat:hover { color: rgba(255,255,255,0.75); }
+.nav-stat:hover::after { opacity: 1; }
+
 /* ── mobile toggler ── */
 .nav-toggler {
     background: none;
@@ -240,11 +268,14 @@
             @auth
             {{-- Desktop only --}}
             <div class="d-none d-md-flex align-items-center gap-1">
-                <span class="nav-hints" title="Hints დარჩენილი">💡 {{ $myHints }}</span>
+                <span class="nav-link-item" style="cursor:default;">
+                    👤 {{ auth()->user()->nickname }}
+                </span>
 
-                <a class="nav-link-item" href="#" onclick="showPlayerStats(event)">
-                    👤 {{ \Illuminate\Support\Str::limit(auth()->user()->nickname, 10, '...') }}
-                </a>
+                <span class="nav-hints">💡 {{ $myHints }}</span>
+
+                <span class="nav-stat"
+                      data-tooltip="ამ ლეველს {{ $topPercent }}%-მა შეძლო">🏆 top {{ $topPercent }}%</span>
 
                 @if(auth()->user()->isAdmin())
                 <a class="nav-link-item text-danger fw-bold" href="{{ route('admin.panel') }}">
@@ -299,9 +330,14 @@
 
     {{-- ── mobile collapse menu ── --}}
     <div class="nav-collapse d-md-none" id="mobileNav">
-        <span class="nav-collapse-item" style="cursor:default;color:#666;">
-            💡 {{ $myHints }} hints &nbsp;|&nbsp;
-            👤 {{ \Illuminate\Support\Str::limit(auth()->user()->nickname, 18, '...') }}
+        <span class="nav-collapse-item" style="cursor:default;color:#aaa;">
+            👤 {{ auth()->user()->nickname }}
+        </span>
+        <span class="nav-collapse-item" style="cursor:default;color:#666;padding-top:0;">
+            💡 {{ $myHints }} hints
+        </span>
+        <span class="nav-collapse-item" style="cursor:default;color:#666;padding-top:0;" title="ამ ლეველს {{ $topPercent }}%-მა შეძლო">
+            🏆 top {{ $topPercent }}%
         </span>
 
         @if(auth()->user()->isAdmin())
@@ -309,10 +345,6 @@
             <i class="bi bi-shield-lock-fill"></i> Admin Panel
         </a>
         @endif
-
-        <a class="nav-collapse-item" href="#" onclick="showPlayerStats(event);toggleMobileNav(null,true);">
-            📊 სტატისტიკა
-        </a>
 
         <form method="POST" action="{{ route('logout') }}" data-loader data-loader-text="Signing out…" class="m-0">
             @csrf
@@ -381,27 +413,4 @@ document.addEventListener('submit', e => {
     if (form) AppLoader.show(form.dataset.loaderText || 'Loading…');
 });
 
-@auth
-function showPlayerStats(e) {
-    e.preventDefault();
-    Swal.fire({
-        title: '📊 შენი სტატისტიკა',
-        html: `
-            <div style="text-align:left;line-height:2.2;font-size:0.92rem;">
-                <div>👥 სულ მოთამაშე: <b>{{ $totalPlayers }}</b></div>
-                <hr style="margin:6px 0;border-color:#eee;">
-                <div>🔼 ჩემზე წინ: <b>{{ $aheadCount }}</b></div>
-                <div>🟡 ჩემს ტურში: <b>{{ $sameCount }}</b></div>
-                <div>🔽 ჩემზე დაბლა: <b>{{ $belowCount }}</b></div>
-                <hr style="margin:6px 0;border-color:#eee;">
-                <div>💡 hints: <b>{{ $myHints }}</b></div>
-                <div>🏁 გავლილი ლეველი: <b>{{ auth()->user()->level - 1 }}</b></div>
-            </div>
-        `,
-        confirmButtonText: 'დახურვა',
-        confirmButtonColor: '#111',
-        width: 320,
-    });
-}
-@endauth
 </script>
