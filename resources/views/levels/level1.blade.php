@@ -44,7 +44,6 @@
   }
 
   .nickname-wrap {
-    position: relative;
     margin-top: 0.5rem;
     background: #fff;
     border: 1px solid #ced4da;
@@ -55,35 +54,23 @@
     border-color: #86b7fe;
     box-shadow: 0 0 0 0.25rem rgba(13,110,253,.25);
   }
-  .nickname-highlight {
-    position: absolute;
-    inset: 0;
+  #nicknameInput {
     padding: 0.375rem 0.75rem;
     font-size: 1rem;
     font-family: inherit;
     line-height: 1.5;
-    white-space: pre-wrap;
-    word-break: break-all;
-    overflow: hidden;
-    pointer-events: none;
-    background: transparent;
-    z-index: 1;
-    box-sizing: border-box;
-  }
-  #nicknameInput {
-    position: relative;
-    z-index: 2;
-    color: transparent !important;
-    caret-color: #0d6efd;
-    caret-width: 2px;
-    background: transparent !important;
-    border: none !important;
-    box-shadow: none !important;
-    outline: none !important;
-    resize: vertical;
-    width: 100%;
+    min-height: calc(1.5em * 3 + 0.75rem);
+    outline: none;
     word-break: break-all;
     overflow-wrap: anywhere;
+    white-space: pre-wrap;
+    cursor: text;
+    border-radius: 0.375rem;
+  }
+  #nicknameInput:empty::before {
+    content: "შეიყვანეთ Nickname";
+    color: #6c757d;
+    pointer-events: none;
   }
 
   .captcha-letter {
@@ -108,8 +95,7 @@
         <h2 class="h5 mb-3 text-center">შეიყვანე შენი nickname</h2>
 
         <div class="nickname-wrap mt-2">
-          <div id="nicknameHighlight" class="nickname-highlight" aria-hidden="true"></div>
-          <textarea id="nicknameInput" class="form-control" rows="3" placeholder="შეიყვანეთ Nickname"></textarea>
+          <div id="nicknameInput" contenteditable="true" spellcheck="false" autocorrect="off" autocomplete="off"></div>
         </div>
         <div id="charCounter" class="text-muted mt-1" style="display:none;">0/35</div>
         <div id="rulesContainer" class="rules-scroll"></div>
@@ -120,38 +106,9 @@
 
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
-const nicknameInput   = document.getElementById('nicknameInput');
-const nicknameHighlight = document.getElementById('nicknameHighlight');
-const rulesContainer  = document.getElementById('rulesContainer');
-const charCounter     = document.getElementById('charCounter');
-
-function updateHighlight(text) {
-    const rule27Active = activeRuleIds.includes(27);
-
-    const counts = {};
-    if (rule27Active) {
-        [...text].forEach(c => {
-            if (/[a-zA-Z]/.test(c)) counts[c.toLowerCase()] = (counts[c.toLowerCase()] || 0) + 1;
-        });
-    }
-    const dups = new Set(Object.keys(counts).filter(l => counts[l] > 1));
-
-    const html = [...text].map(c => {
-        if (c === '\n') return '\n';
-        const safe = c.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
-        if (rule27Active && /[a-zA-Z]/.test(c) && dups.has(c.toLowerCase())) {
-            return `<span style="color:#e74c3c;font-weight:700;">${safe}</span>`;
-        }
-        return `<span style="color:#212529;">${safe}</span>`;
-    }).join('');
-
-    nicknameHighlight.innerHTML = html + ' ';
-    nicknameHighlight.scrollTop = nicknameInput.scrollTop;
-}
-
-nicknameInput.addEventListener('scroll', () => {
-    nicknameHighlight.scrollTop = nicknameInput.scrollTop;
-});
+const nicknameInput  = document.getElementById('nicknameInput');
+const rulesContainer = document.getElementById('rulesContainer');
+const charCounter    = document.getElementById('charCounter');
 
 let allRules = [];
 let activeRuleIds = [];
@@ -160,15 +117,107 @@ let gameWon = false;
 let isSubmitting = false;
 let shakenRuleIds = new Set();
 
-// BLOCK COPY/PASTE
-['copy','paste','cut','contextmenu','drop'].forEach(evt=>{
-  nicknameInput.addEventListener(evt,e=>e.preventDefault());
-});
-nicknameInput.addEventListener('keydown', e=>{
-  if((e.ctrlKey||e.metaKey)&&['v','c','x'].includes(e.key.toLowerCase())) e.preventDefault();
+// ── contenteditable helpers ──────────────────────────────────────────────────
+
+function getNicknameText() {
+  return (nicknameInput.innerText || '').replace(/\n$/, '');
+}
+
+function getCaretPos() {
+  const sel = window.getSelection();
+  if (!sel || !sel.rangeCount) return 0;
+  const range = sel.getRangeAt(0).cloneRange();
+  range.collapse(true);
+  const tmp = document.createRange();
+  tmp.selectNodeContents(nicknameInput);
+  tmp.setEnd(range.startContainer, range.startOffset);
+  return [...tmp.toString()].length;
+}
+
+function setCaretPos(charPos) {
+  const walk = document.createTreeWalker(nicknameInput, NodeFilter.SHOW_TEXT);
+  let remaining = charPos, node;
+  while ((node = walk.nextNode())) {
+    const chars = [...node.nodeValue];
+    if (remaining <= chars.length) {
+      const byteOff = chars.slice(0, remaining).join('').length;
+      const range = document.createRange();
+      range.setStart(node, byteOff);
+      range.collapse(true);
+      const sel = window.getSelection();
+      sel.removeAllRanges();
+      sel.addRange(range);
+      return;
+    }
+    remaining -= chars.length;
+  }
+  // fallback: end of content
+  const range = document.createRange();
+  range.selectNodeContents(nicknameInput);
+  range.collapse(false);
+  window.getSelection().removeAllRanges();
+  window.getSelection().addRange(range);
+}
+
+function renderColors(text, caretPos) {
+  const rule27Active = activeRuleIds.includes(27);
+  const counts = {};
+  if (rule27Active) {
+    [...text].forEach(c => {
+      if (/[a-zA-Z]/.test(c)) counts[c.toLowerCase()] = (counts[c.toLowerCase()] || 0) + 1;
+    });
+  }
+  const dups = new Set(Object.keys(counts).filter(l => counts[l] > 1));
+
+  const html = [...text].map(c => {
+    if (c === '\n') return '<br>';
+    const safe = c.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+    if (rule27Active && /[a-zA-Z]/.test(c) && dups.has(c.toLowerCase())) {
+      return `<span style="color:#e74c3c;font-weight:700;">${safe}</span>`;
+    }
+    return safe;
+  }).join('');
+
+  nicknameInput.innerHTML = html || '';
+  if (caretPos !== undefined && document.activeElement === nicknameInput) {
+    setCaretPos(caretPos);
+  }
+}
+
+function applyColors() {
+  const pos = document.activeElement === nicknameInput ? getCaretPos() : undefined;
+  renderColors(getNicknameText(), pos);
+}
+
+// ── strip Georgian ───────────────────────────────────────────────────────────
+
+function stripGeorgian() {
+  const text = getNicknameText();
+  const stripped = [...text].filter(c => !/[Ⴀ-ჿⴀ-⴯]/.test(c)).join('');
+  if (stripped !== text) {
+    const pos = getCaretPos();
+    const georgiansBefore = [...text].slice(0, pos).filter(c => /[Ⴀ-ჿⴀ-⴯]/.test(c)).length;
+    renderColors(stripped, Math.max(0, pos - georgiansBefore));
+    return stripped;
+  }
+  return text;
+}
+
+['keyup','compositionend','compositionupdate'].forEach(evt =>
+  nicknameInput.addEventListener(evt, stripGeorgian)
+);
+
+// ── block copy/paste ─────────────────────────────────────────────────────────
+
+['copy','paste','cut','contextmenu','drop'].forEach(evt =>
+  nicknameInput.addEventListener(evt, e => e.preventDefault())
+);
+nicknameInput.addEventListener('keydown', e => {
+  if ((e.ctrlKey||e.metaKey) && ['v','c','x'].includes(e.key.toLowerCase())) e.preventDefault();
 });
 
-// FETCH rules
+// ── fetch rules ──────────────────────────────────────────────────────────────
+
 async function fetchRules() {
   try {
     const res = await fetch(`/level/{{ $level }}/nickname/live`, {
@@ -179,14 +228,11 @@ async function fetchRules() {
         'Accept': 'application/json',
         'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
       },
-      body: JSON.stringify({ nickname: nicknameInput.value })
+      body: JSON.stringify({ nickname: getNicknameText() })
     });
-
     if (!res.ok) return;
-
     const data = await res.json();
     if (data.locked) return;
-
     allRules = data.rules || [];
     if (activeRuleIds.length === 0 && allRules.length > 0) activeRuleIds.push(allRules[0].id);
   } catch (err) {
@@ -194,7 +240,8 @@ async function fetchRules() {
   }
 }
 
-// SUBMIT nickname
+// ── submit ───────────────────────────────────────────────────────────────────
+
 async function submitNickname() {
   if (isSubmitting) return;
   isSubmitting = true;
@@ -207,7 +254,7 @@ async function submitNickname() {
         'Accept': 'application/json',
         'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
       },
-      body: JSON.stringify({ nickname: nicknameInput.value })
+      body: JSON.stringify({ nickname: getNicknameText() })
     });
     if (!res.ok) throw new Error('Submit failed');
     const data = await res.json();
@@ -221,9 +268,7 @@ async function submitNickname() {
         confirmButtonText: 'გავიარო CAPTCHA →',
         allowOutsideClick: false,
         allowEscapeKey: false,
-      }).then(() => {
-        window.location.href = `/levels/${data.newLevel}`;
-      });
+      }).then(() => { window.location.href = `/levels/${data.newLevel}`; });
     } else {
       gameWon = false;
       allRules = data.rules || allRules;
@@ -237,115 +282,107 @@ async function submitNickname() {
   }
 }
 
-// RENDER captcha
+// ── captcha render ───────────────────────────────────────────────────────────
+
 function renderCaptchaRuleHTML(r) {
   return `ნიკნეიმი უნდა შეიცავდეს ქაფთჩას:<br>
     <img src="/img/captcha.png" alt="captcha"
          style="max-width:180px;margin-top:6px;border-radius:6px;display:block;">`;
 }
 
-// CHECK rules
-function checkRules() {
-  allRules.forEach(r=>r.passed?completedRuleIds.add(r.id):completedRuleIds.delete(r.id));
+// ── check rules ──────────────────────────────────────────────────────────────
 
-  const allActivePassed = activeRuleIds.every(id=>{
-    const r = allRules.find(x=>x.id===id);
+function checkRules() {
+  allRules.forEach(r => r.passed ? completedRuleIds.add(r.id) : completedRuleIds.delete(r.id));
+
+  const allActivePassed = activeRuleIds.every(id => {
+    const r = allRules.find(x => x.id === id);
     return r && r.passed;
   });
-
-  if(allActivePassed){
-    const next = allRules.find(r=>!activeRuleIds.includes(r.id) && !r.passed);
-    if(next) activeRuleIds.push(next.id);
+  if (allActivePassed) {
+    const next = allRules.find(r => !activeRuleIds.includes(r.id) && !r.passed);
+    if (next) activeRuleIds.push(next.id);
   }
 
   renderRules();
 
-  const allPassed = allRules.length && allRules.every(r=>r.passed);
-  if(allPassed && !gameWon && !isSubmitting && nicknameInput.value.trim()!==''){
+  const allPassed = allRules.length && allRules.every(r => r.passed);
+  if (allPassed && !gameWon && !isSubmitting && getNicknameText().trim() !== '') {
     gameWon = true;
     submitNickname();
   }
 }
 
-// RENDER rules
+// ── render rules ─────────────────────────────────────────────────────────────
+
 function renderRules() {
   rulesContainer.innerHTML = '';
   const pending = [], passed = [];
   activeRuleIds.forEach(id => {
     const r = allRules.find(x => x.id === id);
-    if(!r) return;
+    if (!r) return;
     r.passed ? passed.push(r) : pending.push(r);
   });
 
-  pending.forEach((r,i)=>{
-    rulesContainer.insertAdjacentHTML('beforeend',`
-      <div class="rule ${!shakenRuleIds.has(r.id)&&i===0?'rule-shake-once':''}"
+  pending.forEach((r, i) => {
+    rulesContainer.insertAdjacentHTML('beforeend', `
+      <div class="rule ${!shakenRuleIds.has(r.id) && i === 0 ? 'rule-shake-once' : ''}"
            style="background:#ffeaea;color:#e74c3c;border-left:6px solid #c0392b;padding:10px 15px;margin:5px 0;border-radius:8px;font-weight:bold;">
-        ${r.id===999?renderCaptchaRuleHTML(r):r.text}
-      </div>
-    `);
+        ${r.id === 999 ? renderCaptchaRuleHTML(r) : r.text}
+      </div>`);
     shakenRuleIds.add(r.id);
   });
 
-  passed.forEach(r=>{
-    rulesContainer.insertAdjacentHTML('beforeend',`
+  passed.forEach(r => {
+    rulesContainer.insertAdjacentHTML('beforeend', `
       <div class="rule"
            style="background:#d4f8e8;color:#27ae60;border-left:6px solid #2ecc71;padding:10px 15px;margin:5px 0;border-radius:8px;font-weight:bold;">
-        ${r.id===999?renderCaptchaRuleHTML(r):r.text}
-      </div>
-    `);
+        ${r.id === 999 ? renderCaptchaRuleHTML(r) : r.text}
+      </div>`);
   });
 
-  updateHighlight(nicknameInput.value);
+  applyColors();
 }
 
-// CHARACTER COUNTER
+// ── char counter ─────────────────────────────────────────────────────────────
+
 charCounter.style.display = 'none';
 charCounter.style.opacity = '0';
 
-function stripGeorgian() {
-  const val = nicknameInput.value;
-  const stripped = val.replace(/[Ⴀ-ჿⴀ-⴯]/g, '');
-  if (stripped !== val) {
-    const pos = Math.max(0, nicknameInput.selectionStart - (val.length - stripped.length));
-    nicknameInput.value = stripped;
-    nicknameInput.setSelectionRange(pos, pos);
-  }
-}
-['keyup', 'compositionend', 'compositionupdate'].forEach(evt =>
-  nicknameInput.addEventListener(evt, stripGeorgian)
-);
+// ── input handler ─────────────────────────────────────────────────────────────
 
 const STORAGE_KEY = 'nickname_draft_level{{ $level }}';
 
-nicknameInput.addEventListener('input', async ()=>{
-  stripGeorgian();
-  localStorage.setItem(STORAGE_KEY, nicknameInput.value);
-  updateHighlight(nicknameInput.value);
+nicknameInput.addEventListener('input', async () => {
+  const text = stripGeorgian();
+  localStorage.setItem(STORAGE_KEY, getNicknameText());
   await fetchRules();
   checkRules();
-  const len = nicknameInput.value.length;
-  const rule12 = allRules.find(r=>r.id===12);
+
+  const len = [...getNicknameText()].length;
+  const rule12 = allRules.find(r => r.id === 12);
   const hasRule12 = rule12 && activeRuleIds.includes(12);
 
-  if(hasRule12){
+  if (hasRule12) {
     charCounter.textContent = `${len}/35`;
-    if(charCounter.style.display==='none'){
-      charCounter.style.display='block';
-      setTimeout(()=>{charCounter.style.opacity='1'},10);
+    if (charCounter.style.display === 'none') {
+      charCounter.style.display = 'block';
+      setTimeout(() => { charCounter.style.opacity = '1'; }, 10);
     }
-  } else if(charCounter.style.display!=='none'){
-    charCounter.style.opacity='0';
-    setTimeout(()=>{charCounter.style.display='none'},300);
+  } else if (charCounter.style.display !== 'none') {
+    charCounter.style.opacity = '0';
+    setTimeout(() => { charCounter.style.display = 'none'; }, 300);
   }
 });
 
+// ── restore from localStorage ─────────────────────────────────────────────────
+
 const saved = localStorage.getItem(STORAGE_KEY);
 if (saved) {
-  nicknameInput.value = saved;
-  updateHighlight(saved);
+  nicknameInput.innerText = saved;
+  applyColors();
 }
-fetchRules().then(()=>{ checkRules(); });
+fetchRules().then(() => { checkRules(); });
 
 </script>
 
