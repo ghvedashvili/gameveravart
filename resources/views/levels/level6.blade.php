@@ -278,37 +278,28 @@
   }
 
   #fo-answer-box {
-    display: none;
+    position: fixed;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    visibility: hidden;
+    pointer-events: none;
+    z-index: 99999;
+    font-size: 28px;
+    font-weight: 700;
+    color: #000;
+    background: #fff;
   }
 
   @media print {
-    html, body {
-      background: #fff !important;
-      height: auto !important;
-      overflow: visible !important;
-      margin: 0 !important;
-      padding: 0 !important;
-    }
-
     body * {
       visibility: hidden !important;
-      background: transparent !important;
     }
 
     #fo-answer-box {
       visibility: visible !important;
-      display: flex !important;
-      position: fixed !important;
-      inset: 0 !important;
-      align-items: center !important;
-      justify-content: center !important;
       background: #fff !important;
-      font-size: 28px !important;
-      font-weight: 700 !important;
-      color: #000 !important;
-      z-index: 99999 !important;
-      width: 100vw !important;
-      height: 100vh !important;
     }
   }
 </style>
