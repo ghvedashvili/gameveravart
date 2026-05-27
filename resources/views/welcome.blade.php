@@ -246,7 +246,7 @@
            data-loader
            data-loader-text="შესვლა...">
             <img src="https://www.svgrepo.com/show/475656/google-color.svg" alt="G">
-            Sign in with Google
+            <span id="btnTextEl"></span>
         </a>
     </div>
 </div>
@@ -266,8 +266,8 @@
                 const syms = Array.isArray(symbolSets)
                     ? symbolSets[i % symbolSets.length]
                     : symbolSets;
-                const startAt  = now + i * 45 + Math.random() * 15;
-                const settleAt = startAt + 350 + Math.random() * 150;
+                const startAt  = now + i * 70 + Math.random() * 20;
+                const settleAt = startAt + 520 + Math.random() * 200;
                 this.queue.push({ from: oldText[i] || '', to: newText[i] || '', startAt, settleAt, syms, char: '', lastSwap: 0 });
             }
             cancelAnimationFrame(this.frameRequest);
@@ -282,7 +282,7 @@
                     complete++;
                     output += q.to;
                 } else if (now >= q.startAt) {
-                    if (!q.char || now - q.lastSwap > 75) {
+                    if (!q.char || now - q.lastSwap > 90) {
                         q.char     = q.syms[Math.floor(Math.random() * q.syms.length)];
                         q.lastSwap = now;
                     }
@@ -311,19 +311,20 @@
         '←↑→↓↔↕⇐⇑⇒⇓⇔➔➜➤➝',
     ];
 
-    const scrambler  = new TextScramble(document.getElementById('titleEl'));
-    const scrambler2 = new TextScramble(document.getElementById('subtitleEl'));
-    const subSyms    = '⠁⠂⠃♠♣♥♔♕•-±×ᚠᚢあいう←↑→'.split('');
-    const enterBtn   = document.getElementById('enterBtn');
+    const scrambler    = new TextScramble(document.getElementById('titleEl'));
+    const scrambler2   = new TextScramble(document.getElementById('subtitleEl'));
+    const scramblerBtn = new TextScramble(document.getElementById('btnTextEl'));
+    const subSyms      = '⠁⠂⠃♠♣♥♔♕•-±×ᚠᚢあいう←↑→'.split('');
+    const enterBtn     = document.getElementById('enterBtn');
 
     function animate() {
-        enterBtn.classList.remove('visible');
-        scrambler2.setText('', subSyms);
-        scrambler.setText('VERAVART GAME', symSets).then(() => {
-            scrambler2.setText('by ghvedashvili', subSyms).then(() => {
-                setTimeout(() => enterBtn.classList.add('visible'), 1800);
-                setTimeout(animate, 14000);
-            });
+        scrambler2.setText('Ghvedashvili presents...', subSyms).then(() => {
+            setTimeout(() => scrambler.setText('VERAVART GAME', symSets).then(() => {
+                setTimeout(() => {
+                    enterBtn.classList.add('visible');
+                    scramblerBtn.setText('Sign in with Google', subSyms);
+                }, 2000);
+            }), 2000);
         });
     }
 
