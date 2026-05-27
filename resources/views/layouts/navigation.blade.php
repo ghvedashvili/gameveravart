@@ -367,23 +367,27 @@ function toggleStepper() {
     const navH   = nav.offsetHeight;
     const panelH = isOpen ? panel.offsetHeight : 0;
 
-    if (isOpen) panel.style.overflow = 'hidden';
-
-    panel.classList.toggle('open', !isOpen);
-    toggle.classList.toggle('active', !isOpen);
-
     document.body.style.transition = 'padding-top 0.3s ease';
 
     if (!isOpen) {
+        // setup BEFORE animation — panel is still max-height:0 but offsetWidth is correct
+        panel.style.overflow = '';
+        setupStepper();
+        scrollToCurrentLevel(true);
+
+        panel.classList.add('open');
+        toggle.classList.add('active');
+
         setTimeout(() => {
             const h = nav.offsetHeight + 'px';
             document.body.style.paddingTop = h;
             document.documentElement.style.setProperty('--nav-h', h);
-            panel.style.overflow = '';
-            setupStepper();
-            scrollToCurrentLevel(true);
         }, 310);
     } else {
+        panel.style.overflow = 'hidden';
+        panel.classList.remove('open');
+        toggle.classList.remove('active');
+
         const h = (navH - panelH) + 'px';
         document.body.style.paddingTop = h;
         document.documentElement.style.setProperty('--nav-h', h);
@@ -391,6 +395,7 @@ function toggleStepper() {
 }
 
 let _infScrollHandler = null;
+let _contentWidth     = 0;
 
 function setupStepper() {
     const panel = document.getElementById('stepperPanel');
@@ -436,6 +441,8 @@ function setupStepper() {
     cloneBefore.reverse().forEach(el => track.insertBefore(el, track.firstChild));
     cloneAfter.forEach(el => track.appendChild(el));
 
+    _contentWidth = contentWidth;
+
     // middle set-ზე დასეტვა (instant)
     panel.scrollLeft = contentWidth;
 
@@ -451,7 +458,6 @@ function scrollToCurrentLevel(instant = false) {
     const panel = document.getElementById('stepperPanel');
     if (!panel || panel.style.overflowX === 'hidden') return;
     const track = panel.querySelector('.stepper-track');
-    // target original (non-cloned) current item
     const currentItem = Array.from(track.querySelectorAll('.stepper-item')).find(
         el => !el.dataset.clone && el.querySelector('.dot-current')
     );
@@ -459,7 +465,22 @@ function scrollToCurrentLevel(instant = false) {
     const panelRect = panel.getBoundingClientRect();
     const itemRect  = currentItem.getBoundingClientRect();
     const delta = (itemRect.left + itemRect.width / 2) - (panelRect.left + panelRect.width / 2);
-    panel.scrollBy({ left: delta, behavior: instant ? 'instant' : 'smooth' });
+
+    let target = panel.scrollLeft + delta;
+
+    // clamp: არ ვაჩვენოთ clone-ები საწყის პოზიციაზე
+    // [_contentWidth … 2×_contentWidth − panelWidth] = original set-ის ბუნებრივი საზღვრები
+    if (_contentWidth > 0) {
+        const minS = _contentWidth - 20;
+        const maxS = _contentWidth * 2 - panel.offsetWidth;
+        if (maxS > minS) target = Math.max(minS, Math.min(maxS, target));
+    }
+
+    if (instant) {
+        panel.scrollLeft = target;
+    } else {
+        panel.scrollTo({ left: target, behavior: 'smooth' });
+    }
 }
 
 // drag-to-scroll (desktop)
