@@ -261,8 +261,8 @@ async function submitNickname() {
     if (data.status === 'success') {
       Swal.fire({
         title: '🎉 გილოცავთ!',
-        html: `გილოცავთ, რომ აირჩიეთ nickname <b>"${data.nickname}"</b>.<br><br>
-               თუმცა გაგვიკვირდა — რატომ აირჩიეთ ასეთი რთული?<br>
+        html: `გამარჯობა <b>"${data.nickname}"</b>.<br><br>
+               ჰმმ... თუმცა ეს ნიკნეიმი ძალიან საეჭვოდ გამოიყურება...<br>
                ამიტომ აუცილებლად უნდა დავადასტუროთ,<br>რომ არ ხართ <b>რობოტი</b>.<br><br>
                გთხოვთ გაიაროთ <b>CAPTCHA</b> ტესტი.`,
         confirmButtonText: 'გავიარო CAPTCHA →',
