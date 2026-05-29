@@ -111,12 +111,163 @@
 
 @else
 
-<div class="container text-center mt-5">
-    <h3>გამარჯობა, {{ auth()->user()->nickname }} 👋</h3>
-    <a href="{{ route('levels.show', auth()->user()->level) }}"
-       class="btn btn-primary mt-3 swal-loader">
-        ▶ გაგრძელება
-    </a>
+@php
+    $user         = auth()->user();
+    $totalPlayers = \App\Models\User::count();
+    $myLevel      = $user->level;
+    $maxLevel     = \App\Models\Question::max('level') ?? $myLevel;
+    $playersAhead = \App\Models\User::where('level', '>', $myLevel)->count();
+    $sameLevel    = \App\Models\User::where('level', $myLevel)->count();
+    $myRank       = $playersAhead + 1;
+@endphp
+
+<style>
+    nav.navbar { display: none !important; }
+    body {
+        margin: 0;
+        padding: 0 !important;
+        overflow: hidden;
+        background: #080808 !important;
+        min-height: 100dvh;
+        min-height: 100vh;
+    }
+    body.dot-light::before { display: none; }
+
+    .dash-hero {
+        min-height: 100dvh;
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        position: relative;
+        overflow: hidden;
+        padding: 32px 24px;
+        gap: 32px;
+    }
+
+    .dash-hero::before {
+        content: '';
+        position: absolute;
+        inset: -100%;
+        background-image: radial-gradient(rgba(255,255,255,0.09) 1px, transparent 1px);
+        background-size: 28px 28px;
+        animation: gridMove 18s linear infinite;
+        pointer-events: none;
+    }
+
+    @keyframes gridMove {
+        0%   { transform: translate(0,0); }
+        100% { transform: translate(28px,28px); }
+    }
+
+    .dash-inner {
+        position: relative;
+        z-index: 1;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 28px;
+        width: 100%;
+        max-width: 560px;
+    }
+
+    .dash-greeting {
+        font-family: 'Goldman', monospace;
+        font-size: clamp(1rem, 4vw, 1.4rem);
+        color: #c8c8c8;
+        letter-spacing: 0.06em;
+        text-align: center;
+    }
+
+    .dash-level-badge {
+        font-family: 'Goldman', monospace;
+        font-size: clamp(0.65rem, 2vw, 0.75rem);
+        color: #444;
+        letter-spacing: 0.1em;
+        text-align: center;
+        margin-top: -18px;
+    }
+
+    .dash-stats {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 12px;
+        width: 100%;
+    }
+
+    .stat-card {
+        background: #0e0e0e;
+        border: 1px solid #1e1e1e;
+        border-radius: 6px;
+        padding: 16px 10px;
+        text-align: center;
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+    }
+
+    .stat-value {
+        font-family: 'Goldman', monospace;
+        font-size: clamp(1.1rem, 4vw, 1.6rem);
+        color: #c8c8c8;
+        letter-spacing: 0.04em;
+        line-height: 1;
+    }
+
+    .stat-label {
+        font-family: 'Goldman', monospace;
+        font-size: clamp(0.55rem, 1.8vw, 0.65rem);
+        color: #3a3a3a;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        line-height: 1.4;
+    }
+
+    .dash-continue {
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        padding: 13px 36px;
+        font-family: 'Goldman', monospace;
+        font-size: clamp(0.75rem, 2.5vw, 0.85rem);
+        letter-spacing: 0.1em;
+        color: #c8c8c8;
+        background: transparent;
+        border: 1px solid #2a2a2a;
+        border-radius: 3px;
+        text-decoration: none;
+        transition: color 0.2s, border-color 0.2s;
+    }
+    .dash-continue:hover { color: #fff; border-color: #555; }
+</style>
+
+<div class="dash-hero">
+    <div class="dash-inner">
+        <div>
+            <div class="dash-greeting">გამარჯობა, {{ $user->nickname }}</div>
+            <div class="dash-level-badge">{{ $myLevel }}-ე ტური · #{{ $myRank }} ადგილი</div>
+        </div>
+
+        <div class="dash-stats">
+            <div class="stat-card">
+                <div class="stat-value">{{ $totalPlayers }}</div>
+                <div class="stat-label">სულ<br>მოთამაშე</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value">{{ $sameLevel }}</div>
+                <div class="stat-label">შენს<br>ტურზე</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value">{{ $playersAhead }}</div>
+                <div class="stat-label">შენზე<br>წინ</div>
+            </div>
+        </div>
+
+        <a href="{{ route('levels.show', $myLevel) }}" class="dash-continue" data-loader data-loader-text="Loading...">
+            {{ $myLevel }}-ე ტური →
+        </a>
+    </div>
 </div>
 
 @endif

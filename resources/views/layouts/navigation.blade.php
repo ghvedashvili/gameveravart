@@ -274,8 +274,8 @@
         {{-- Center: Levels toggle (auth only) --}}
         <div class="nav-center">
             @auth
-            <button class="levels-toggle" id="levelsToggle" onclick="toggleStepper()" style="font-family:'Goldman',monospace;font-size:1.1rem;letter-spacing:0.1em;">
-                ლეველები <span class="levels-caret">▾</span>
+            <button class="levels-toggle" id="levelsToggle" onclick="toggleStepper()" style="font-family:'Goldman',monospace;font-size:1rem;letter-spacing:0.1em;">
+                Levels <span class="levels-caret">▾</span>
             </button>
             @endauth
         </div>
