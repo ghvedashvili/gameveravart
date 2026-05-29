@@ -135,6 +135,7 @@
         color: #202124;
         user-select: none;
         z-index: 1;
+        visibility: hidden;
     }
     #scratchCanvas {
         position: absolute;
@@ -247,6 +248,16 @@
         </div>
     </div>
 </div>
+<script>
+(function(){
+    var s = parseInt(localStorage.getItem('level2_captcha_step') || '1');
+    if (s > 1) {
+        document.querySelectorAll('.captcha-challenge').forEach(function(el){ el.classList.remove('active'); });
+        var el = document.getElementById('step' + s);
+        if (el) el.classList.add('active');
+    }
+})();
+</script>
 @else
 
 @include('levels.levelcomplete', ['level' => $level,  'userLevel' => auth()->user()->level])
@@ -276,6 +287,7 @@ function initScratch() {
     if (!wrapper || !canvas) return;
 
     reveal.textContent = selectionCaptcha;
+    reveal.style.visibility = 'visible';
 
     canvas.width  = wrapper.offsetWidth;
     canvas.height = wrapper.offsetHeight;
@@ -392,8 +404,17 @@ function verify(step){
                 allowOutsideClick:false, allowEscapeKey:false
             }).then(result=>{
                 document.querySelector('.captcha-challenge.active').classList.remove('active');
-                if(step<4){ document.getElementById('step'+(step+1)).classList.add('active'); document.getElementById('input'+(step+1)).value=''; setTimeout(()=>{document.getElementById('input'+(step+1)).focus();},100); if(step===1) setTimeout(initScratch, 80); }
-                else{ if(res.newLevel){ window.location.href=`/levels/${res.newLevel}`; } else{ document.querySelector('.captcha-challenge.active')?.classList.remove('active'); document.getElementById('success').style.display='block'; } }
+                if(step<4){
+                    localStorage.setItem('level2_captcha_step', String(step + 1));
+                    document.getElementById('step'+(step+1)).classList.add('active');
+                    document.getElementById('input'+(step+1)).value='';
+                    setTimeout(()=>{document.getElementById('input'+(step+1)).focus();},100);
+                    if(step===1) setTimeout(initScratch, 80);
+                } else {
+                    localStorage.removeItem('level2_captcha_step');
+                    if(res.newLevel){ window.location.href=`/levels/${res.newLevel}`; }
+                    else{ document.querySelector('.captcha-challenge.active')?.classList.remove('active'); document.getElementById('success').style.display='block'; }
+                }
             });
         } else { showError(input,'არასწორი CAPTCHA. სცადეთ თავიდან.'); }
     }).catch(error=>{
@@ -421,9 +442,22 @@ function showCaptchaInfo(){
     });
 }
 
-document.addEventListener('DOMContentLoaded',function(){
-    updateProgress(1);
-    setTimeout(()=>{ const input1=document.getElementById('input1'); if(input1) input1.focus(); },300);
+document.addEventListener('DOMContentLoaded', function() {
+    const savedStep = parseInt(localStorage.getItem('level2_captcha_step') || '1');
+
+    document.querySelectorAll('.captcha-challenge').forEach(el => el.classList.remove('active'));
+
+    if (savedStep > 1) {
+        updateProgress(savedStep);
+        const stepEl = document.getElementById('step' + savedStep);
+        if (stepEl) stepEl.classList.add('active');
+        setTimeout(() => { document.getElementById('input' + savedStep)?.focus(); }, 300);
+        if (savedStep === 2) setTimeout(initScratch, 80);
+    } else {
+        updateProgress(1);
+        document.getElementById('step1').classList.add('active');
+        setTimeout(() => { document.getElementById('input1')?.focus(); }, 300);
+    }
 });
 </script>
 @endsection
