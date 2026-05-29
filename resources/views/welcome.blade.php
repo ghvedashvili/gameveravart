@@ -12,7 +12,6 @@
 @if(auth()->user()->level == 1)
 
 <style>
-    @import url('https://fonts.googleapis.com/css2?family=Goldman&display=swap');
     nav.navbar { display: none !important; }
     body {
         margin: 0;
@@ -127,8 +126,6 @@
 @php $googleUrl = route('google.login'); @endphp
 
 <style>
-    @import url('https://fonts.googleapis.com/css2?family=Goldman&display=swap');
-
     nav.navbar { display: none !important; }
 
     body {
