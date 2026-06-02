@@ -174,19 +174,23 @@
 
     .dash-greeting {
         font-family: 'Goldman', monospace;
-        font-size: clamp(1rem, 4vw, 1.4rem);
+        font-size: clamp(0.7rem, 3.5vw, 1.4rem);
         color: #c8c8c8;
         letter-spacing: 0.06em;
         text-align: center;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        max-width: 100%;
     }
 
     .dash-level-badge {
         font-family: 'Goldman', monospace;
-        font-size: clamp(0.65rem, 2vw, 0.75rem);
-        color: #444;
-        letter-spacing: 0.1em;
+        font-size: clamp(0.68rem, 2vw, 0.78rem);
+        color: #555;
+        letter-spacing: 0.08em;
         text-align: center;
-        margin-top: -18px;
+        margin-top: 6px;
     }
 
     .dash-stats {
@@ -197,31 +201,31 @@
     }
 
     .stat-card {
-        background: #0e0e0e;
-        border: 1px solid #1e1e1e;
+        background: #111;
+        border: 1px solid #2a2a2a;
         border-radius: 6px;
         padding: 16px 10px;
         text-align: center;
         display: flex;
         flex-direction: column;
-        gap: 6px;
+        gap: 8px;
     }
 
     .stat-value {
         font-family: 'Goldman', monospace;
-        font-size: clamp(1.1rem, 4vw, 1.6rem);
-        color: #c8c8c8;
+        font-size: clamp(1.2rem, 4vw, 1.8rem);
+        color: #d8d8d8;
         letter-spacing: 0.04em;
         line-height: 1;
     }
 
     .stat-label {
         font-family: 'Goldman', monospace;
-        font-size: clamp(0.55rem, 1.8vw, 0.65rem);
-        color: #3a3a3a;
+        font-size: clamp(0.58rem, 1.8vw, 0.68rem);
+        color: #666;
         letter-spacing: 0.08em;
         text-transform: uppercase;
-        line-height: 1.4;
+        line-height: 1.5;
     }
 
     .dash-continue {
