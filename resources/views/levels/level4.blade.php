@@ -4,113 +4,72 @@
     nav.navbar { display: none !important; }
 
     body {
+        background-color: #080808 !important;
+        color: #636b6f;
+        font-family: sans-serif;
         margin: 0;
         padding: 0 !important;
-        overflow: hidden;
-        background: #080808 !important;
         height: 100dvh;
         height: 100vh;
     }
 
     body.dot-light::before { display: none; }
 
-    .level4-hero {
+    .full-height {
         height: 100dvh;
         height: 100vh;
         display: flex;
         align-items: center;
         justify-content: center;
-        position: relative;
-        overflow: hidden;
+        padding: 24px;
+        box-sizing: border-box;
     }
 
-    .level4-hero::before {
-        content: '';
-        position: absolute;
-        inset: -100%;
-        background-image: radial-gradient(rgba(255,255,255,0.1) 1px, transparent 1px);
-        background-size: 28px 28px;
-        animation: gridMove 18s linear infinite;
-        pointer-events: none;
-    }
-
-    @keyframes gridMove {
-        0%   { transform: translate(0, 0); }
-        100% { transform: translate(28px, 28px); }
-    }
-
-    .level4-card {
-        position: relative;
-        z-index: 1;
-        max-width: 480px;
-        width: 100%;
-        padding: 0 24px;
-        font-family: 'Goldman', monospace;
-    }
-
-    .level4-row {
+    .error-wrap {
         display: flex;
         align-items: center;
-        justify-content: center;
         gap: 0;
-        flex-wrap: nowrap;
     }
 
-    .level4-code {
-        font-size: clamp(0.85rem, 3vw, 1.05rem);
-        color: #555;
-        letter-spacing: 0.08em;
-        padding-right: 20px;
-        border-right: 1px solid #2a2a2a;
+    .code {
+        border-right: 2px solid #2a2a2a;
+        font-size: clamp(14px, 4vw, 26px);
+        padding: 0 clamp(10px, 3vw, 15px);
+        text-align: center;
+        white-space: nowrap;
+        flex-shrink: 0;
+    }
+
+    .message {
+        font-size: clamp(13px, 3.5vw, 18px);
+        padding: clamp(6px, 2vw, 10px);
         white-space: nowrap;
     }
 
-    .level4-info {
-        padding-left: 20px;
-        display: flex;
-        flex-direction: column;
-        gap: 8px;
-    }
-
-    .level4-type {
-        font-size: clamp(0.72rem, 2.2vw, 0.88rem);
-        color: #4a4a4a;
-        letter-spacing: 0.06em;
-        text-transform: uppercase;
-    }
-
-    .level4-severity {
-        font-size: clamp(0.65rem, 2vw, 0.78rem);
-        color: #333;
-        letter-spacing: 0.05em;
-    }
-
-    .level4-severity span {
-        font-size: 1em;
-        opacity: 0.8;
-    }
-
-    .level4-initiator {
-        margin-top: 20px;
-        text-align: center;
-        font-size: clamp(0.65rem, 2vw, 0.75rem);
-        color: #333;
-        letter-spacing: 0.06em;
+    @media (max-width: 400px) {
+        .error-wrap {
+            flex-direction: column;
+            align-items: center;
+            gap: 16px;
+        }
+        .code {
+            border-right: none;
+            border-bottom: 2px solid #2a2a2a;
+            padding: 0 0 12px 0;
+            width: 100%;
+            text-align: center;
+        }
+        .message {
+            padding: 0;
+            text-align: center;
+        }
     }
 </style>
 
-<div class="level4-hero">
-    <div class="level4-card">
-        <div class="level4-row">
-            <div class="level4-code">ERROR 004</div>
-            <div class="level4-info">
-                <div class="level4-type">Type: user not recognized</div>
-                <div class="level4-severity">
-                    Severity: not fol <span>(low error)</span>
-                </div>
-            </div>
-        </div>
-        <div class="level4-initiator">iniciator: @veravart_game</div>
+<div class="full-height">
+    <div class="error-wrap">
+        <div class="code">NOTFOLLOWERROR</div>
+        <div class="message">iniciator: @veravart_game</div>
     </div>
 </div>
 
