@@ -204,15 +204,29 @@
 <script>
 document.addEventListener('DOMContentLoaded', function() {
     // სურათების URL დინამიურად — origin-დან, PWA და browser ორივეში მუშაობს
-    const baseUrl = window.location.origin;
+    const baseUrl  = window.location.origin;
     const labelUrl = `${baseUrl}/img/coca-cola-label.png`;
     const topUrl   = `${baseUrl}/img/top-tin.png`;
 
-    document.querySelectorAll('.tin').forEach(el => {
-        el.style.backgroundImage = `url('${labelUrl}')`;
-    });
-    document.querySelectorAll('.top').forEach(el => {
-        el.style.backgroundImage = `url('${topUrl}')`;
+    function preload(url) {
+        return new Promise((resolve) => {
+            const img = new Image();
+            img.onload  = () => resolve(url);
+            img.onerror = () => resolve(url);
+            img.src = url;
+        });
+    }
+
+    AppLoader.show('Loading…');
+
+    Promise.all([preload(labelUrl), preload(topUrl)]).then(() => {
+        document.querySelectorAll('.tin').forEach(el => {
+            el.style.backgroundImage = `url('${labelUrl}')`;
+        });
+        document.querySelectorAll('.top').forEach(el => {
+            el.style.backgroundImage = `url('${topUrl}')`;
+        });
+        AppLoader.hide();
     });
 
 
