@@ -539,5 +539,7 @@ function changeRole(userId, userName, currentRole) {
         });
     });
 }
+
+
 </script>
 @endsection

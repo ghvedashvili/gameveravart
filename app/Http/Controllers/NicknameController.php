@@ -40,34 +40,49 @@ private function getRules(string $nickname): array
     $primes = ["11","13","17","19","23","29","31","37","41","43","47","53","59","61","67","71","73","79","83","89","97"];
 
     return [
-        
+        // ['id'=>11,'text'=>'Nickname უნდა შეიცავდეს რომაულ ციფრს (მინიმუმ 3 სიმბოლო)','passed'=>preg_match('/[IVXLCDM]{3,}/i',$nickname)],
         
         ['id'=>1,'text'=>'Nickname უნდა შეიცავდეს მინიმუმ 5 სიმბოლოს','passed'=>mb_strlen($nickname)>=5],
         ['id'=>2,'text'=>'Nickname უნდა შეიცავდეს ციფრს','passed'=>preg_match('/\d/',$nickname)],
         ['id'=>3,'text'=>'Nickname უნდა შეიცავდეს დიდ ლათინურ ასოს','passed'=>preg_match('/[A-Z]/',$nickname)],
         ['id'=>4,'text'=>'Nickname უნდა შეიცავდეს სპეციალურ სიმბოლოს','passed'=>preg_match('/[!@#$%^&*()_\-+=\[\]{};:"\\|,.<>\/?]/',$nickname)],
         ['id'=>5,'text'=>'Nickname-ში ციფრების ჯამი უნდა იყოს 15','passed'=>array_sum(array_map('intval',$numbers[0]??[]))===15],
-        ['id'=>6,'text'=>'Nickname უნდა შეიცავდეს თვეს და კვირის რომელიმე დღეს','passed'=>(function() use($nickname,$nicknameUpper,$days,$months){
-            $allDays = array_merge(...array_values($days));
-            $allDays = array_merge(array_keys($days), $allDays);
-            $allMonths = array_merge(...$months);
-            $hasDay   = collect($allDays)->contains(fn($d)=>str_contains($nicknameUpper, strtoupper($d)));
-            $hasMonth = collect($allMonths)->contains(fn($m)=>str_contains(strtolower($nickname), strtolower($m)));
-            return $hasDay && $hasMonth;
+        // ['id'=>6,'text'=>'Nickname უნდა შეიცავდეს თვეს და კვირის რომელიმე დღეს','passed'=>(function() use($nickname,$nicknameUpper,$days,$months){
+        //     $allDays = array_merge(...array_values($days));
+        //     $allDays = array_merge(array_keys($days), $allDays);
+        //     $allMonths = array_merge(...$months);
+        //     $hasDay   = collect($allDays)->contains(fn($d)=>str_contains($nicknameUpper, strtoupper($d)));
+        //     $hasMonth = collect($allMonths)->contains(fn($m)=>str_contains(strtolower($nickname), strtolower($m)));
+        //     return $hasDay && $hasMonth;
+        // })()],
+        ['id'=>7,'text'=>'Nickname უნდა შეიცავდეს ჭადრაკის ნოტაციას','passed'=>preg_match('/([a-h][1-8]|[nbrqk][a-h][1-8])/',$nickname)],
+        ['id'=>9,'text'=>'Nickname უნდა შეიცავდეს ემოჯის ან სმაილს ','passed'=>(function() use($nickname){
+            // Unicode emoji — ფართო range (standard + newer + misc symbols)
+            if (preg_match('/[\x{1F300}-\x{1FAFF}\x{2600}-\x{27BF}\x{2300}-\x{23FF}\x{2B00}-\x{2BFF}]/u', $nickname)) return true;
+            // Text emoticons: :) :( :D ;) :P :-) :-( XD <3 ^^ და სხვა
+            if (preg_match('/(?:[:;=xX8][-o*]?[\)\(DdPpOo3\[\]\/\\\\|])|(?:<3)|(?:XD|xD|x3)|(?:\^[\^_\.]\^)|(?:>[\._]<)/u', $nickname)) return true;
+            return false;
         })()],
-        ['id'=>7,'text'=>'Nickname უნდა შეიცავდეს ჭადრაკის ნოტაციას','passed'=>preg_match('/([a-h][1-8]|[nbrqk][a-h][1-8])/i',$nickname)],
-        ['id'=>9,'text'=>'Nickname უნდა შეიცავდეს ემოჯის','passed'=>preg_match('/[\x{1F300}-\x{1F9FF}]/u',$nickname)],
-        ['id'=>10,'text'=>'Nickname უნდა შეიცავდეს რომელიმე ბირთვული სახელმწიფოს ISO კოდს','passed'=>collect($nuclearCodes)->contains(fn($c)=>str_contains($nicknameUpper,$c))],
-        ['id'=>11,'text'=>'Nickname უნდა შეიცავდეს რომაულ ციფრს (მინიმუმ 3 სიმბოლო)','passed'=>preg_match('/[IVXLCDM]{3,}/i',$nickname)],
-        ['id'=>13,'text'=>'Nickname-ში ყოველი მე-4 ასო უნდა იყოს დიდი','passed'=>function() use($nickname){
+        //['id'=>10,'text'=>'Nickname უნდა შეიცავდეს რომელიმე ბირთვული სახელმწიფოს ISO კოდს','passed'=>collect($nuclearCodes)->contains(fn($c)=>str_contains($nicknameUpper,$c))],
+        ['id'=>11,'text'=>'Nickname უნდა შეიცავდეს 2-ნიშნა რომაულ ციფრს','passed'=>(function() use($nickname){
+            if (!preg_match_all('/[IVXLCDM]+/i', $nickname, $m)) return false;
+            foreach ($m[0] as $chunk) {
+                $u = strtoupper($chunk);
+                if (strlen($u) >= 2 && preg_match('/^M{0,4}(CM|CD|D?C{0,3})(XC|XL|L?X{0,3})(IX|IV|V?I{0,3})$/', $u) && $u !== '') {
+                    return true;
+                }
+            }
+            return false;
+        })()],
+        ['id'=>13,'text'=>'Nickname-ში ყოველი მე-3 ლათინური ასო უნდა იყოს დიდი','passed'=>function() use($nickname){
             $letters = preg_replace('/[^a-zA-Z]/','',$nickname);
-            if(strlen($letters)<4) return false;
-            for($i=3;$i<strlen($letters);$i+=4){
+            if(strlen($letters)<3) return true;
+            for($i=2;$i<strlen($letters);$i+=3){
                 if($letters[$i]!==strtoupper($letters[$i])) return false;
             }
             return true;
         }],
-        ['id'=>14,'text'=>'Nickname უნდა შეიცავდეს 3 ხმოვანს ზედიზედ','passed'=>preg_match('/[aeiouAEIOU]{3,}/',$nickname)],
+        // ['id'=>14,'text'=>'Nickname უნდა შეიცავდეს 3 ხმოვანს ზედიზედ','passed'=>preg_match('/[aeiouAEIOU]{3,}/',$nickname)],
         ['id'=>15,'text'=>'Nickname უნდა შეიცავდეს ათწილადს','passed'=>preg_match('/\d+\.\d+/',$nickname)],
         ['id'=>16,'text'=>'Nickname არ უნდა შეიცავდეს ქართულ ასოებს','passed'=>!preg_match('/[\x{10D0}-\x{10FF}]/u',$nickname)],
         ['id'=>17,'text'=>'Nickname არ უნდა შეიცავდეს მიმდევრობით ერთსა და იმავე სიმბოლოს 2-ზე მეტჯერ','passed'=>!preg_match('/(.)\1\1/',$nickname)],
@@ -78,14 +93,14 @@ private function getRules(string $nickname): array
                     (strtoupper($matches[2]) === 'F')
                 )
         ],
-        ['id'=>12,'text'=>'Nickname-ის სიგრძე უნდა იყოს მაქსიმუმ 35 სიმბოლო','passed'=>mb_strlen($nickname)<=35],
+        ['id'=>12,'text'=>'Nickname-ის სიგრძე უნდა იყოს მაქსიმუმ 20 სიმბოლო','passed'=>mb_strlen($nickname)<=20],
         ['id'=>19,'text'=>'Nickname უნდა შეიცავდეს ძვირფასი ლითონის ქიმიურ სიმბოლოს','passed'=>(function() use($nickname){
             $precious = ['Au','Ag','Pt','Pd','Rh','Ir','Ru','Os','Re'];
             return collect($precious)->contains(fn($s)=>str_contains($nickname,$s));
         })()],
-        ['id'=>20,'text'=>'Nickname უნდა შეიცავდეს მსუბუქი ავტომობილების სანომრე ნიშანს (ქართული სტანადარტით) ','passed'=>preg_match('/[A-Z]{2}-\d{3}-[A-Z]{2}/',$nicknameUpper)],
+        // ['id'=>20,'text'=>'Nickname უნდა შეიცავდეს მსუბუქი ავტომობილების სანომრე ნიშანს (ქართული სტანადარტით) ','passed'=>preg_match('/[A-Z]{2}-\d{3}-[A-Z]{2}/',$nicknameUpper)],
         ['id'=>21,'text'=>'Nickname-ში არ უნდა იყოს "41"','passed'=>!str_contains($nickname,'41')],
-        ['id'=>22,'text'=>'Nickname უნდა შეიცავდეს მარტივ 2 ნიშნა რიცხვს','passed'=>collect($primes)->contains(fn($p)=>str_contains($nickname,$p))],
+        //['id'=>22,'text'=>'Nickname უნდა შეიცავდეს მარტივ 2 ნიშნა რიცხვს','passed'=>collect($primes)->contains(fn($p)=>str_contains($nickname,$p))],
         ['id'=>23,'text'=>'Nickname უნდა შეიცავდეს ციფრულ დროს (12:34, 23:59)','passed'=>preg_match('/([01]?[0-9]|2[0-3]):[0-5][0-9]/',$nickname)],
         ['id'=>27,'text'=>'Nickname-ში ყველა ლათინური სიმბოლო გამოყენებული უნდა იყოს მხოლოდ ერთხელ','passed'=>(function() use($nickname){
             $letters = strtolower(preg_replace('/[^a-zA-Z]/', '', $nickname));
@@ -98,22 +113,22 @@ private function getRules(string $nickname): array
             $odd  = count(array_filter($numbers, fn($n)=>intval($n)%2!==0));
             return $even === $odd;
         }],
-        ['id'=>28,'text'=>'Nickname უნდა შეიცავდეს პოკერის სტრიტის ნოტაციას','passed'=>(function() use($nickname){
-            $upper = strtoupper($nickname);
-            $straights = ['A2345','23456','34567','45678','56789','6789T','789TJ','89TJQ','9TJQK','TJQKA'];
-            foreach($straights as $s){
-                if(str_contains($upper,$s)) return true;
-                if(str_contains($upper,strrev($s))) return true;
-            }
-            return false;
-        })()],
+        // ['id'=>28,'text'=>'Nickname უნდა შეიცავდეს პოკერის სტრიტის ნოტაციას','passed'=>(function() use($nickname){
+        //     $upper = strtoupper($nickname);
+        //     $straights = ['A2345','23456','34567','45678','56789','6789T','789TJ','89TJQ','9TJQK','TJQKA'];
+        //     foreach($straights as $s){
+        //         if(str_contains($upper,$s)) return true;
+        //         if(str_contains($upper,strrev($s))) return true;
+        //     }
+        //     return false;
+        // })()],
         ['id'=>26,'text'=>'Nickname-ში ციფრების ნამრავლი 0-ზე მეტი უნდა იყოს','passed'=>function() use($nickname){
             $numbers = preg_match_all('/\d/',$nickname,$matches) ? $matches[0] : [];
             if(empty($numbers)) return false;
             $product = array_product(array_map('intval',$numbers));
             return $product > 0;
         }],
-        ['id'=>999,'text'=>'Nickname უნდა შეიცავდეს ქაფთჩას: "cdm1S"','passed'=>str_contains($nickname,'cdm1S')]
+        ['id'=>999,'text'=>'Nickname უნდა შეიცავდეს ქაფთჩას:','passed'=>str_contains($nickname,'cd1Au')]
         
     ];
 }

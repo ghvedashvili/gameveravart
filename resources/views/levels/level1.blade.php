@@ -97,7 +97,7 @@
         <div class="nickname-wrap mt-2">
           <div id="nicknameInput" contenteditable="true" spellcheck="false" autocorrect="off" autocomplete="off"></div>
         </div>
-        <div id="charCounter" class="text-muted mt-1" style="display:none;">0/35</div>
+        <div id="charCounter" class="text-muted mt-1" style="display:none;">0/20</div>
         <div id="rulesContainer" class="rules-scroll"></div>
       </div>
     </div>
@@ -361,17 +361,14 @@ nicknameInput.addEventListener('input', async () => {
 
   const len = [...getNicknameText()].length;
   const rule12 = allRules.find(r => r.id === 12);
-  const hasRule12 = rule12 && activeRuleIds.includes(12);
+  const hasRule12 = rule12 && activeRuleIds.includes(12) && !rule12.passed;
 
-  if (hasRule12) {
-    charCounter.textContent = `${len}/35`;
-    if (charCounter.style.display === 'none') {
-      charCounter.style.display = 'block';
-      setTimeout(() => { charCounter.style.opacity = '1'; }, 10);
-    }
-  } else if (charCounter.style.display !== 'none') {
-    charCounter.style.opacity = '0';
-    setTimeout(() => { charCounter.style.display = 'none'; }, 300);
+  if (hasRule12 && charCounter.style.display === 'none') {
+    charCounter.style.display = 'block';
+    setTimeout(() => { charCounter.style.opacity = '1'; }, 10);
+  }
+  if (charCounter.style.display !== 'none') {
+    charCounter.textContent = `${len}/20`;
   }
 });
 

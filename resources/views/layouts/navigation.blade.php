@@ -295,6 +295,12 @@
                     L{{ $myLevel }}
                 </span>
 
+                @if($currentPageLevel !== null)
+                <button onclick="restartLevel({{ $currentPageLevel }})" class="nav-link-item" style="background:none;border:none;cursor:pointer;color:rgba(255,255,255,0.4);font-size:0.7rem;font-family:'Goldman',monospace;letter-spacing:0.05em;" title="თავიდან დაწყება">
+                    ↺ თავიდან
+                </button>
+                @endif
+
                 @if(auth()->user()->isAdmin())
                 <a class="nav-link-item text-danger fw-bold" href="{{ route('admin.panel') }}">
                     <i class="bi bi-shield-lock-fill"></i>
@@ -361,6 +367,13 @@
 
         <div class="nav-collapse-divider"></div>
 
+        @if($currentPageLevel !== null)
+        <button onclick="restartLevel({{ $currentPageLevel }})" class="nav-collapse-item" style="background:none;border:none;cursor:pointer;font-size:0.8rem;">
+            ↺ თავიდან დაწყება
+        </button>
+        <div class="nav-collapse-divider"></div>
+        @endif
+
         @if(auth()->user()->isAdmin())
         <a class="nav-collapse-item text-danger" href="{{ route('admin.panel') }}" style="font-size:0.8rem;">
             <i class="bi bi-shield-lock-fill"></i> ადმინი
@@ -379,6 +392,13 @@
 </nav>
 
 <script>
+function restartLevel(level) {
+    localStorage.removeItem('level' + level + '_captcha_step');
+    localStorage.removeItem('nickname_draft_level' + level);
+    document.querySelectorAll('input, textarea').forEach(function(el) { el.value = ''; });
+    window.location.replace(window.location.pathname);
+}
+
 function toggleStepper() {
     const panel  = document.getElementById('stepperPanel');
     const toggle = document.getElementById('levelsToggle');

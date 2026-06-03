@@ -31,13 +31,13 @@ class CaptchaController extends Controller
         $question = Question::where('level', 2)->firstOrFail();
 
         return view('levels.level2', [
-            'question' => $question,
+            'question'        => $question,
             'standardCaptcha' => $standardCaptcha,
-            'selectionCaptcha' => $selectionCaptcha,
+            'selectionCaptcha'=> $selectionCaptcha,
             'georgianCaptcha' => $georgianCaptcha,
             'rotatingCaptcha' => $rotatingCaptcha,
-            'userLevel' => $user->level,
-            'level' => 2
+            'userLevel'       => $user->level,
+            'level'           => 2,
         ]);
     }
 
@@ -63,10 +63,7 @@ class CaptchaController extends Controller
         if (!$success) {
             return response()->json([
                 'success' => false,
-                'debug' => [
-                    'input' => $input,
-                    'expected' => $expected
-                ]
+                'debug' => ['input' => $input, 'expected' => $expected]
             ]);
         }
 
@@ -75,11 +72,7 @@ class CaptchaController extends Controller
             if ($user->level < 3) {
                 $user->update(['level' => 3]);
             }
-
-            return response()->json([
-                'success' => true,
-                'newLevel' => 3
-            ]);
+            return response()->json(['success' => true, 'newLevel' => 3]);
         }
 
         return response()->json(['success' => true]);

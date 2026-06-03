@@ -127,7 +127,7 @@
         margin: 0;
         padding: 0 !important;
         overflow: hidden;
-        background: #080808 !important;
+        background: #f5f5f5 !important;
         min-height: 100dvh;
         min-height: 100vh;
     }
@@ -150,7 +150,7 @@
         content: '';
         position: absolute;
         inset: -100%;
-        background-image: radial-gradient(rgba(255,255,255,0.09) 1px, transparent 1px);
+        background-image: radial-gradient(rgba(0,0,0,0.1) 1px, transparent 1px);
         background-size: 28px 28px;
         animation: gridMove 18s linear infinite;
         pointer-events: none;
@@ -175,7 +175,7 @@
     .dash-greeting {
         font-family: 'Goldman', monospace;
         font-size: clamp(0.7rem, 3.5vw, 1.4rem);
-        color: #c8c8c8;
+        color: #111;
         letter-spacing: 0.06em;
         text-align: center;
         white-space: nowrap;
@@ -187,7 +187,7 @@
     .dash-level-badge {
         font-family: 'Goldman', monospace;
         font-size: clamp(0.68rem, 2vw, 0.78rem);
-        color: #555;
+        color: #888;
         letter-spacing: 0.08em;
         text-align: center;
         margin-top: 6px;
@@ -201,8 +201,8 @@
     }
 
     .stat-card {
-        background: #111;
-        border: 1px solid #2a2a2a;
+        background: #fff;
+        border: 1px solid #e0e0e0;
         border-radius: 6px;
         padding: 16px 10px;
         text-align: center;
@@ -214,7 +214,7 @@
     .stat-value {
         font-family: 'Goldman', monospace;
         font-size: clamp(1.2rem, 4vw, 1.8rem);
-        color: #d8d8d8;
+        color: #111;
         letter-spacing: 0.04em;
         line-height: 1;
     }
@@ -222,7 +222,7 @@
     .stat-label {
         font-family: 'Goldman', monospace;
         font-size: clamp(0.58rem, 1.8vw, 0.68rem);
-        color: #666;
+        color: #999;
         letter-spacing: 0.08em;
         text-transform: uppercase;
         line-height: 1.5;
@@ -236,14 +236,14 @@
         font-family: 'Goldman', monospace;
         font-size: clamp(0.75rem, 2.5vw, 0.85rem);
         letter-spacing: 0.1em;
-        color: #c8c8c8;
+        color: #333;
         background: transparent;
-        border: 1px solid #2a2a2a;
+        border: 1px solid #ccc;
         border-radius: 3px;
         text-decoration: none;
         transition: color 0.2s, border-color 0.2s;
     }
-    .dash-continue:hover { color: #fff; border-color: #555; }
+    .dash-continue:hover { color: #000; border-color: #888; }
 </style>
 
 <div class="dash-hero">
