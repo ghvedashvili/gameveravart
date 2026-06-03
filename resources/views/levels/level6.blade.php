@@ -305,7 +305,7 @@
 </style>
 
 {{-- პასუხი encoded სახით, უჩინარია --}}
-<div id="fo-answer-box" data-a="{{ $encodedAnswer }}" style="display:none;"></div>
+<div id="fo-answer-box" data-a="{{ $encodedAnswer }}"></div>
 
 <div id="level6-wrapper">
   {{-- საქაღალდის სცენა --}}
