@@ -30,7 +30,7 @@ Route::get('/login', function () {
     return redirect('/');
 });
 Route::post('/logout', function () {
-    Auth::logout();
+    \Illuminate\Support\Facades\Auth::logout();
     request()->session()->invalidate();
     request()->session()->regenerateToken();
 
