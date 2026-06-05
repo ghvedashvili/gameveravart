@@ -40,15 +40,16 @@ class PushController extends Controller
             'user_id' => 'nullable|integer|exists:users,id',
         ]);
 
-        $pub  = config('services.vapid.public_key');
-        $priv = config('services.vapid.private_key');
-        $subj = config('services.vapid.subject');
+        $pub  = config('services.vapid.public_key')  ?: env('VAPID_PUBLIC_KEY');
+        $priv = config('services.vapid.private_key') ?: env('VAPID_PRIVATE_KEY');
+        $subj = config('services.vapid.subject')     ?: env('APP_URL');
 
         \Log::info('VAPID debug', [
-            'pub_len'  => strlen((string) $pub),
-            'priv_len' => strlen((string) $priv),
-            'subject'  => $subj,
-            'pub_first10' => substr((string) $pub, 0, 10),
+            'config_pub_len' => strlen((string) config('services.vapid.public_key')),
+            'env_pub_len'    => strlen((string) env('VAPID_PUBLIC_KEY')),
+            'pub_len'        => strlen((string) $pub),
+            'subject'        => $subj,
+            'all_env_keys'   => array_keys(array_filter(getenv(), fn($k) => str_starts_with($k, 'VAPID'), ARRAY_FILTER_USE_KEY)),
         ]);
 
         if (!$pub || !$priv) {
