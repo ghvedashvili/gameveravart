@@ -40,11 +40,26 @@ class PushController extends Controller
             'user_id' => 'nullable|integer|exists:users,id',
         ]);
 
+        $pub  = config('services.vapid.public_key');
+        $priv = config('services.vapid.private_key');
+        $subj = config('services.vapid.subject');
+
+        \Log::info('VAPID debug', [
+            'pub_len'  => strlen((string) $pub),
+            'priv_len' => strlen((string) $priv),
+            'subject'  => $subj,
+            'pub_first10' => substr((string) $pub, 0, 10),
+        ]);
+
+        if (!$pub || !$priv) {
+            return response()->json(['error' => 'VAPID keys not configured', 'pub' => (bool)$pub, 'priv' => (bool)$priv], 500);
+        }
+
         $auth = [
             'VAPID' => [
-                'subject'    => config('services.vapid.subject'),
-                'publicKey'  => config('services.vapid.public_key'),
-                'privateKey' => config('services.vapid.private_key'),
+                'subject'    => $subj,
+                'publicKey'  => $pub,
+                'privateKey' => $priv,
             ],
         ];
 
