@@ -394,6 +394,55 @@ if ('serviceWorker' in navigator) {
 
         window._swReg = reg;
 
+        function updateNotifUI(granted) {
+            const btnD = document.getElementById('notif-btn-desktop');
+            const btnM = document.getElementById('notif-btn-mobile');
+            const iconD = document.getElementById('notif-icon-desktop');
+            const iconM = document.getElementById('notif-icon-mobile');
+            const textM = document.getElementById('notif-text-mobile');
+            if (btnD) btnD.style.display = '';
+            if (btnM) btnM.style.display = '';
+            if (granted) {
+                if (iconD) iconD.className = 'bi bi-bell-fill';
+                if (iconM) iconM.className = 'bi bi-bell-fill';
+                if (textM) textM.textContent = 'შეტყობინებები: ჩართულია';
+                if (btnD) btnD.style.color = 'rgba(255,255,255,0.7)';
+                if (btnM) btnM.style.color = 'rgba(255,255,255,0.7)';
+            } else {
+                if (iconD) iconD.className = 'bi bi-bell';
+                if (iconM) iconM.className = 'bi bi-bell';
+                if (textM) textM.textContent = 'შეტყობინებების ჩართვა';
+            }
+        }
+
+        const _isPwaNotif = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone;
+        if (_isPwaNotif) {
+            reg.pushManager.getSubscription().then(sub => {
+                updateNotifUI(!!sub && Notification.permission === 'granted');
+            });
+        }
+
+        window.toggleNotifications = function() {
+            if (Notification.permission === 'granted') {
+                window._swReg.pushManager.getSubscription().then(sub => {
+                    if (sub) {
+                        sub.unsubscribe().then(() => {
+                            fetch('{{ route("push.unsubscribe") }}', {
+                                method: 'POST',
+                                headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': '{{ csrf_token() }}' },
+                                body: JSON.stringify({ endpoint: sub.endpoint }),
+                            });
+                            updateNotifUI(false);
+                        });
+                    } else {
+                        window.enablePushNotifications();
+                    }
+                });
+            } else {
+                window.enablePushNotifications();
+            }
+        };
+
         window.enablePushNotifications = function() {
             if (!window._swReg) return;
             Notification.requestPermission().then(perm => {
@@ -414,6 +463,7 @@ if ('serviceWorker' in navigator) {
                         });
                         const btn = document.getElementById('pushEnableBtn');
                         if (btn) btn.textContent = '✓ ჩართულია';
+                        updateNotifUI(true);
                     });
                 });
             });

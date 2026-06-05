@@ -301,6 +301,10 @@
                 </button>
                 @endif
 
+                <button id="notif-btn-desktop" onclick="toggleNotifications()" title="შეტყობინებები" style="display:none;background:none;border:none;cursor:pointer;color:rgba(255,255,255,0.4);font-size:0.95rem;padding:6px 8px;border-radius:4px;transition:color 0.15s,background 0.15s;" onmouseenter="this.style.background='rgba(255,255,255,0.08)';this.style.color='#fff'" onmouseleave="this.style.background='';this.style.color='rgba(255,255,255,0.4)'">
+                    <i id="notif-icon-desktop" class="bi bi-bell"></i>
+                </button>
+
                 <button onclick="openPwaModal()" class="nav-link-item pwa-nav-item" style="display:none;background:none;border:none;cursor:pointer;color:rgba(255,255,255,0.4);font-size:0.95rem;" title="App-ის დაყენება">
                     <i class="bi bi-download"></i>
                 </button>
@@ -370,6 +374,11 @@
         </span>
 
         <div class="nav-collapse-divider"></div>
+
+        <button id="notif-btn-mobile" onclick="toggleNotifications()" style="display:none;background:none;border:none;cursor:pointer;font-size:0.8rem;" class="nav-collapse-item">
+            <i id="notif-icon-mobile" class="bi bi-bell"></i>
+            <span id="notif-text-mobile">შეტყობინებები</span>
+        </button>
 
         <button onclick="openPwaModal();toggleMobileNav(null,true)" class="nav-collapse-item pwa-nav-item" style="display:none;background:none;border:none;cursor:pointer;font-size:0.8rem;">
             <i class="bi bi-download"></i> App-ის დაყენება
