@@ -42,9 +42,9 @@ class PushController extends Controller
 
         $auth = [
             'VAPID' => [
-                'subject'    => env('APP_URL'),
-                'publicKey'  => env('VAPID_PUBLIC_KEY'),
-                'privateKey' => env('VAPID_PRIVATE_KEY'),
+                'subject'    => config('services.vapid.subject'),
+                'publicKey'  => config('services.vapid.public_key'),
+                'privateKey' => config('services.vapid.private_key'),
             ],
         ];
 

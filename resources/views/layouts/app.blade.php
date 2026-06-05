@@ -374,7 +374,7 @@ document.addEventListener('click', e => {
 if ('serviceWorker' in navigator) {
     navigator.serviceWorker.register('/sw.js').then(reg => {
         @auth
-        const vapidKey = '{{ env("VAPID_PUBLIC_KEY") }}';
+        const vapidKey = '{{ config("services.vapid.public_key") }}';
 
         function urlBase64ToUint8Array(base64String) {
             const padding = '='.repeat((4 - base64String.length % 4) % 4);
