@@ -24,6 +24,11 @@
     <div class="spinner"></div>
 </div>
 
+<div id="pull-bar" style="position:fixed;top:var(--nav-h,56px);left:0;right:0;background:#f1f3f4;border-bottom:1px solid #ddd;padding:8px 12px;display:flex;align-items:center;gap:8px;z-index:1025;transform:translateY(-100%);transition:transform 0.25s ease;font-family:monospace;">
+    <input id="pull-url-input" type="text" style="flex:1;font-size:1rem;border:1px solid #ccc;border-radius:4px;padding:6px 10px;outline:none;font-family:monospace;color:#222;background:#fff;" spellcheck="false" autocomplete="off">
+    <button onclick="goPullUrl()" style="padding:6px 14px;background:#1a73e8;color:#fff;border:none;border-radius:4px;font-size:0.82rem;cursor:pointer;white-space:nowrap;">→</button>
+</div>
+
 @include('layouts.navigation')
 
 <style>
@@ -205,6 +210,38 @@
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
 
+
+(function() {
+    const bar   = document.getElementById('pull-bar');
+    const input = document.getElementById('pull-url-input');
+    if (!bar || !input) return;
+    let startY = null, shown = false;
+
+    input.value = window.location.href;
+    input.addEventListener('keydown', function(e) {
+        if (e.key === 'Enter') goPullUrl();
+    });
+
+    document.addEventListener('touchstart', function(e) {
+        startY = e.touches[0].clientY;
+    }, { passive: true });
+
+    document.addEventListener('touchend', function(e) {
+        if (startY === null) return;
+        const deltaY = e.changedTouches[0].clientY - startY;
+        startY = null;
+        if (deltaY > 60 && window.scrollY === 0) {
+            if (!shown) { bar.style.transform = 'translateY(0)'; shown = true; }
+        } else if (deltaY < -30 && shown) {
+            bar.style.transform = 'translateY(-100%)'; shown = false;
+        }
+    }, { passive: true });
+})();
+
+function goPullUrl() {
+    const url = document.getElementById('pull-url-input').value.trim();
+    if (url) window.location.href = url;
+}
 
 window.addEventListener('load', () => {
     const pl = document.getElementById('page-loader');
