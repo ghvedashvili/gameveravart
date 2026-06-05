@@ -279,7 +279,6 @@
 
 @php
     $googleUrl   = route('google.login');
-    $playerCount = \App\Models\User::count();
 @endphp
 
 <style>
@@ -292,6 +291,7 @@
         background: #080808;
         height: 100dvh; height: 100vh;
     }
+
     .hero {
         height: 100dvh; height: 100vh;
         display: flex;
@@ -304,80 +304,105 @@
         content: '';
         position: absolute;
         inset: -100%;
-        background-image: radial-gradient(rgba(255,255,255,0.13) 1px, transparent 1px);
+        background-image: radial-gradient(rgba(255,255,255,0.07) 1px, transparent 1px);
         background-size: 28px 28px;
-        animation: gridMove 18s linear infinite;
+        animation: gridMove 20s linear infinite;
         pointer-events: none;
+        z-index: 1;
     }
     @keyframes gridMove {
         0%   { transform: translate(0,0); }
         100% { transform: translate(28px,28px); }
     }
+
     .hero-inner {
         position: relative;
-        z-index: 1;
+        z-index: 2;
         display: flex;
         flex-direction: column;
         align-items: center;
-        gap: clamp(10px, 2.5vh, 22px);
         text-align: center;
-        padding: 0 24px;
+        padding: 0 32px;
+        width: 100%;
     }
 
-    .logo-line {
-        font-family: 'Goldman', monospace;
-        font-size: clamp(1.6rem, 6.5vw, 4rem);
-        font-weight: normal;
-        color: #c8c8c8;
-        letter-spacing: 0.06em;
-        line-height: 1.1;
-        white-space: nowrap;
-        filter: drop-shadow(0 0 0.5em rgba(200,200,200,0.2));
-    }
-
-    /* Phase 2 — VERAVART GAME */
-    .title {
-        font-family: 'Goldman', monospace;
-        font-size: clamp(1.1rem, 5.2vw, 4rem);
-        font-weight: normal;
-        letter-spacing: clamp(0.05em, 0.6vw, 0.2em);
-        color: #c8c8c8;
-        filter: drop-shadow(0 0 0.4em rgba(200,200,200,0.25));
-        min-height: 1.3em;
-        white-space: nowrap;
+    /* Phase 1 — intro subtitle */
+    .subtitle-wrap {
         display: flex;
+        flex-direction: column;
         align-items: center;
         justify-content: center;
-        opacity: 0;
-        transition: opacity 0.4s ease;
+        gap: 0.05em;
     }
-    .dud { color: rgba(255, 50, 50, 0.9); }
-
     .subtitle {
         font-family: 'Goldman', monospace;
-        font-size: clamp(1rem, 3.5vw, 1.6rem);
-        color: #555;
-        letter-spacing: 0.15em;
-        min-height: 1.4em;
+        font-size: clamp(2rem, 8.5vw, 5rem);
+        font-weight: normal;
+        color: #444;
+        letter-spacing: 0.04em;
+        line-height: 1.05;
         opacity: 0;
-        transition: opacity 0.5s ease;
+        transition: opacity 0.6s ease;
+        white-space: nowrap;
+        overflow: hidden;
+        max-width: 98vw;
     }
 
+    /* Phase 2 — main logo */
+    .logo-wrap {
+        display: none;
+        flex-direction: column;
+        align-items: center;
+        gap: clamp(6px, 1.8vh, 18px);
+    }
 
-    .enter-btn {
-        color: #555;
+    .logo-veravart {
         font-family: 'Goldman', monospace;
-        font-size: clamp(0.8rem, 2.5vw, 1rem);
+        font-size: clamp(3rem, 13vw, 8rem);
+        font-weight: normal;
+        color: #d8d8d8;
+        letter-spacing: 0.04em;
+        line-height: 1;
+        white-space: nowrap;
+        overflow: hidden;
+        max-width: 98vw;
+    }
+
+    .logo-game {
+        font-family: 'Goldman', monospace;
+        font-size: clamp(3rem, 13vw, 8rem);
+        font-weight: normal;
+        color: #3a3a3a;
+        letter-spacing: 0.04em;
+        min-height: 1.1em;
+        white-space: nowrap;
+        overflow: hidden;
+        max-width: 98vw;
+    }
+
+    .dud { color: rgba(255, 50, 50, 0.75); }
+
+    /* Phase 3 — sign in */
+    .enter-btn {
+        margin-top: clamp(24px, 4.5vh, 48px);
+        display: inline-flex;
+        align-items: center;
+        gap: 12px;
+        padding: 14px 44px;
+        font-family: 'Goldman', monospace;
+        font-size: clamp(1rem, 2.5vw, 1.4rem);
         letter-spacing: 0.15em;
+        color: #555;
+        border: 1px solid #222;
+        border-radius: 2px;
         text-decoration: none;
-        background: none;
-        border: none;
-        transition: color 0.2s, opacity 0.4s;
+        text-transform: uppercase;
+        transition: color 0.3s ease, border-color 0.3s ease, opacity 0.5s ease;
         opacity: 0;
         pointer-events: none;
     }
     .enter-btn.visible { opacity: 1; pointer-events: auto; }
-    .enter-btn:hover   { color: #aaa; }
+    .enter-btn:hover   { color: #b8b8b8; border-color: #555; }
 
     .pwa-fab {
         position: fixed;
@@ -387,29 +412,41 @@
         transition: opacity 0.4s ease, transform 0.4s ease;
         display: flex; align-items: center; gap: 8px;
         padding: 10px 22px;
-        background: rgba(255,255,255,0.07);
-        border: 1px solid rgba(255,255,255,0.15);
+        background: rgba(255,255,255,0.05);
+        border: 1px solid rgba(255,255,255,0.1);
         border-radius: 100px;
-        color: rgba(255,255,255,0.7);
+        color: rgba(255,255,255,0.45);
         font-family: 'Goldman', monospace;
-        font-size: 0.75rem; letter-spacing: 0.08em;
+        font-size: 0.7rem; letter-spacing: 0.08em;
         cursor: pointer; backdrop-filter: blur(8px);
         white-space: nowrap; z-index: 10;
     }
     .pwa-fab.visible { opacity:1; transform:translateX(-50%) translateY(0); pointer-events:auto; }
-    .pwa-fab:hover   { background:rgba(255,255,255,0.12); color:#fff; }
+    .pwa-fab:hover   { background:rgba(255,255,255,0.09); color:rgba(255,255,255,0.75); }
 </style>
 
 <div class="hero">
     <div class="hero-inner">
-        <div class="logo-line">
-            <span id="logoVeravart"></span><span id="logoGame"></span>
+
+        <div class="subtitle-wrap" id="subtitleWrap">
+            <div class="subtitle" id="subtitleLine1"></div>
+            <div class="subtitle" id="subtitleLine2"></div>
         </div>
 
-        <div class="subtitle" id="subtitleEl"></div>
-        <a href="{{ $googleUrl }}" class="enter-btn" id="enterBtn" data-loader data-loader-text="შესვლა...">
-            sign in
-        </a>
+        <div class="logo-wrap" id="logoWrap">
+            <div class="logo-veravart" id="logoVeravart"></div>
+            <div class="logo-game"     id="logoGame"></div>
+            <a href="{{ $googleUrl }}" class="enter-btn" id="enterBtn" data-loader data-loader-text="შესვლა...">
+                <svg width="20" height="20" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
+                    <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
+                    <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z" fill="#FBBC05"/>
+                    <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
+                </svg>
+                sign in
+            </a>
+        </div>
+
     </div>
 </div>
 
@@ -423,87 +460,94 @@
 <script>
     const isAlreadyInstalled = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone;
     if (!isAlreadyInstalled) {
-        setTimeout(() => { const f=document.getElementById('pwaFab'); if(f) f.classList.add('visible'); }, 8000);
+        setTimeout(() => { const f=document.getElementById('pwaFab'); if(f) f.classList.add('visible'); }, 9000);
     }
 </script>
 
 <script>
-    class TextScramble {
-        constructor(el) { this.el = el; }
-        setText(newText, symbolSets) {
-            const oldText = this.el.innerText;
-            const length  = Math.max(oldText.length, newText.length);
-            const promise = new Promise(resolve => this.resolve = resolve);
-            const now = performance.now();
-            this.queue = [];
-            for (let i = 0; i < length; i++) {
-                const syms = Array.isArray(symbolSets) ? symbolSets[i % symbolSets.length] : symbolSets;
-                const startAt  = now + i * 70 + Math.random() * 20;
-                const settleAt = startAt + 520 + Math.random() * 200;
-                this.queue.push({ from: oldText[i]||'', to: newText[i]||'', startAt, settleAt, syms, char:'', lastSwap:0 });
-            }
-            cancelAnimationFrame(this.frameRequest);
-            this.frameRequest = requestAnimationFrame(t => this.update(t));
-            return promise;
+/* ── TextScramble ── */
+class TextScramble {
+    constructor(el) { this.el = el; }
+    setText(text, syms) {
+        const old = this.el.innerText;
+        const len = Math.max(old.length, text.length);
+        const p   = new Promise(r => this.resolve = r);
+        const now = performance.now();
+        this.queue = [];
+        for (let i = 0; i < len; i++) {
+            const s = Array.isArray(syms) ? syms[i % syms.length] : syms;
+            this.queue.push({
+                from: old[i] || '', to: text[i] || '',
+                start: now + i * 65 + Math.random() * 20,
+                end:   now + i * 65 + 540 + Math.random() * 180,
+                syms: s, ch: '', t: 0
+            });
         }
-        update(now) {
-            let output = '', complete = 0;
-            for (let i = 0; i < this.queue.length; i++) {
-                const q = this.queue[i];
-                if (now >= q.settleAt)      { complete++; output += q.to; }
-                else if (now >= q.startAt)  {
-                    if (!q.char || now - q.lastSwap > 90) { q.char = q.syms[Math.floor(Math.random()*q.syms.length)]; q.lastSwap=now; }
-                    output += `<span class="dud">${q.char}</span>`;
-                } else { output += q.from; }
-            }
-            this.el.innerHTML = output;
-            if (complete === this.queue.length) this.resolve();
-            else this.frameRequest = requestAnimationFrame(t => this.update(t));
-        }
+        cancelAnimationFrame(this.raf);
+        this.raf = requestAnimationFrame(t => this._tick(t));
+        return p;
     }
+    _tick(now) {
+        let out = '', done = 0;
+        for (const q of this.queue) {
+            if (now >= q.end)        { done++; out += q.to; }
+            else if (now >= q.start) {
+                if (!q.ch || now - q.t > 85) { q.ch = q.syms[Math.floor(Math.random()*q.syms.length)]; q.t = now; }
+                out += `<span class="dud">${q.ch}</span>`;
+            } else { out += q.from; }
+        }
+        this.el.innerHTML = out;
+        if (done === this.queue.length) this.resolve();
+        else this.raf = requestAnimationFrame(t => this._tick(t));
+    }
+}
 
-    const symSets = [
-        '⠁⠂⠃⠄⠅⠆⠇⠈⠉⠊⠋⠌⠍⠎⠏⠐⠑⠒⠓⠔⠕⠖⠗⠘⠙⠚⠛⠜⠝⠞⠟⠠⠡⠢⠣⠤⠥⠦⠧⠨⠩⠪⠫⠬⠭⠮⠯',
-        '♠♣♥♦♤♧♡♢','♔♕♖♗♘♙♚♛♜♝♞♟','•-·−','±×÷≈≠≤≥∞√∆∂∫∑∏∈∉',
-        'ᚠᚢᚦᚨᚱᚲᚷᚹᚺᚾᛁᛃᛇᛈᛉᛋᛏᛒᛖᛗᛚᛜᛞ',
-        'あいうえおかきくけこさしすせそアイウエオカキクケコ',
-        '←↑→↓↔↕⇐⇑⇒⇓⇔➔➜➤➝',
-    ];
-    const subSyms = '⠁⠂⠃♠♣♥♔♕•-±×ᚠᚢあいう←↑→'.split('');
+const symSets = [
+    '⠁⠂⠃⠄⠅⠆⠇⠈⠉⠊⠋⠌⠍⠎⠏⠐⠑⠒⠓⠔⠕⠖⠗⠘⠙⠚⠛⠜⠝⠞⠟⠠⠡⠢⠣⠤⠥⠦⠧⠨⠩⠪⠫⠬⠭⠮⠯',
+    '♠♣♥♦♤♧♡♢', '♔♕♖♗♘♙♚♛♜♝♞♟', '•-·−', '±×÷≈≠≤≥∞√∆∂∫∑∏∈∉',
+    'ᚠᚢᚦᚨᚱᚲᚷᚹᚺᚾᛁᛃᛇᛈᛉᛋᛏᛒᛖᛗᛚᛜᛞ',
+    'あいうえおかきくけこさしすせそアイウエオカキクケコ',
+    '←↑→↓↔↕⇐⇑⇒⇓⇔➔➜➤➝',
+];
+const subSyms = '⠁⠂⠃♠♣♥♔♕•-±×ᚠᚢあいう←↑→'.split('');
 
-    const logoVeravart = document.getElementById('logoVeravart');
-    const logoGame     = document.getElementById('logoGame');
-    const subtitleEl   = document.getElementById('subtitleEl');
-    const enterBtn     = document.getElementById('enterBtn');
+const subtitleLine1 = document.getElementById('subtitleLine1');
+const subtitleLine2 = document.getElementById('subtitleLine2');
+const subtitleWrap  = document.getElementById('subtitleWrap');
+const logoWrap      = document.getElementById('logoWrap');
+const logoVeravart  = document.getElementById('logoVeravart');
+const logoGame      = document.getElementById('logoGame');
+const enterBtn      = document.getElementById('enterBtn');
 
-    const sVeravart = new TextScramble(logoVeravart);
-    const sGame     = new TextScramble(logoGame);
-    const sSub      = new TextScramble(subtitleEl);
+const sLine1    = new TextScramble(subtitleLine1);
+const sLine2    = new TextScramble(subtitleLine2);
+const sVeravart = new TextScramble(logoVeravart);
+const sGame     = new TextScramble(logoGame);
 
-    function fadeIn(el) { el.style.opacity = '1'; }
+function animate() {
+    subtitleLine1.style.opacity = '1';
 
-    function animate() {
-        // Phase 1: subtitle შემოდის
-        fadeIn(subtitleEl);
-        sSub.setText('Ghvedashvili წარმოგიდგენთ', subSyms).then(() => {
-            // Phase 2: subtitle ქრება
+    sLine1.setText('ghvedashvili', symSets).then(() => {
+        subtitleLine2.style.opacity = '1';
+        return sLine2.setText('presents', symSets);
+    }).then(() => {
+        setTimeout(() => {
+            subtitleLine1.style.opacity = '0';
+            subtitleLine2.style.opacity = '0';
             setTimeout(() => {
-                subtitleEl.style.opacity = '0';
-                setTimeout(() => {
-                    subtitleEl.style.display = 'none';
-                    // Phase 3: veravart → game
-                    sVeravart.setText('veravart', symSets).then(() => {
-                        return sGame.setText(' game', subSyms);
-                    }).then(() => {
-                        // Phase 4: button
-                        setTimeout(() => enterBtn.classList.add('visible'), 600);
-                    });
-                }, 500);
-            }, 1200);
-        });
-    }
+                subtitleWrap.style.display = 'none';
+                logoWrap.style.display     = 'flex';
+                sVeravart.setText('veravart', symSets).then(() => {
+                    return sGame.setText('game', subSyms);
+                }).then(() => {
+                    setTimeout(() => enterBtn.classList.add('visible'), 700);
+                });
+            }, 500);
+        }, 1300);
+    });
+}
 
-    setTimeout(animate, 600);
+setTimeout(animate, 700);
 </script>
 
 @endauth
