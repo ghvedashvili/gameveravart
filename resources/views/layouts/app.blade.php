@@ -302,6 +302,9 @@ function triggerNativeInstall() {
     const bar   = document.getElementById('pull-bar');
     const input = document.getElementById('pull-url-input');
     if (!bar || !input) return;
+
+    const isPwa = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone;
+    if (!isPwa) return;
     let startY = null, shown = false;
 
     input.value = window.location.href;
