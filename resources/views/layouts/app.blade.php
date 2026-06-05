@@ -20,6 +20,10 @@
 </head>
 <body class="@yield('bodyClass')">
 
+<div id="page-loader">
+    <div class="spinner"></div>
+</div>
+
 @include('layouts.navigation')
 
 <style>
@@ -60,6 +64,21 @@
         padding-top: 56px; /* navbar-ის სიმაღლე */
     
     }
+
+    #page-loader {
+    position: fixed;
+    inset: 0;
+    background: #080808;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 999999;
+    transition: opacity 0.3s ease;
+}
+#page-loader.fade-out {
+    opacity: 0;
+    pointer-events: none;
+}
 
     .app-loader {
     position: fixed;
@@ -186,6 +205,13 @@
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
 
+
+window.addEventListener('load', () => {
+    const pl = document.getElementById('page-loader');
+    if (!pl) return;
+    pl.classList.add('fade-out');
+    setTimeout(() => pl.remove(), 300);
+});
 
 window.AppLoader = {
     show(text = 'Loading…') {
