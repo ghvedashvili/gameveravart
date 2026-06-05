@@ -277,31 +277,29 @@
 
 @else
 
-@php $googleUrl = route('google.login'); @endphp
+@php
+    $googleUrl   = route('google.login');
+    $playerCount = \App\Models\User::count();
+@endphp
 
 <style>
+    nav.fixed-top, #pull-bar { display: none !important; }
+
     body {
         margin: 0;
         padding: 0 !important;
         overflow: hidden;
         background: #080808;
-        height: 100dvh;
-        height: 100vh;
+        height: 100dvh; height: 100vh;
     }
-
     .hero {
-        height: 100dvh;
-        height: 100vh;
+        height: 100dvh; height: 100vh;
         display: flex;
-        flex-direction: column;
         align-items: center;
         justify-content: center;
-        gap: clamp(12px, 3vh, 24px);
         position: relative;
         overflow: hidden;
     }
-
-    /* moving dot grid */
     .hero::before {
         content: '';
         position: absolute;
@@ -311,24 +309,33 @@
         animation: gridMove 18s linear infinite;
         pointer-events: none;
     }
-
     @keyframes gridMove {
-        0%   { transform: translate(0, 0); }
-        100% { transform: translate(28px, 28px); }
+        0%   { transform: translate(0,0); }
+        100% { transform: translate(28px,28px); }
     }
-
-
     .hero-inner {
         position: relative;
         z-index: 1;
         display: flex;
         flex-direction: column;
         align-items: center;
-        gap: clamp(10px, 2.5vh, 20px);
+        gap: clamp(10px, 2.5vh, 22px);
         text-align: center;
-        padding: 0 20px;
+        padding: 0 24px;
     }
 
+    .logo-line {
+        font-family: 'Goldman', monospace;
+        font-size: clamp(1.6rem, 6.5vw, 4rem);
+        font-weight: normal;
+        color: #c8c8c8;
+        letter-spacing: 0.06em;
+        line-height: 1.1;
+        white-space: nowrap;
+        filter: drop-shadow(0 0 0.5em rgba(200,200,200,0.2));
+    }
+
+    /* Phase 2 — VERAVART GAME */
     .title {
         font-family: 'Goldman', monospace;
         font-size: clamp(1.1rem, 5.2vw, 4rem);
@@ -341,65 +348,71 @@
         display: flex;
         align-items: center;
         justify-content: center;
+        opacity: 0;
+        transition: opacity 0.4s ease;
     }
-
-    .dud {
-        color: rgba(255, 50, 50, 0.9);
-    }
+    .dud { color: rgba(255, 50, 50, 0.9); }
 
     .subtitle {
         font-family: 'Goldman', monospace;
-        font-size: clamp(1rem, 3vw, 1.6rem);
+        font-size: clamp(1rem, 3.5vw, 1.6rem);
         color: #555;
         letter-spacing: 0.15em;
-        text-transform: lowercase;
         min-height: 1.4em;
+        opacity: 0;
+        transition: opacity 0.5s ease;
     }
 
-</style>
 
-<style>
-    .pwa-fab {
-        position: fixed;
-        bottom: 28px;
-        left: 50%;
-        transform: translateX(-50%) translateY(20px);
+    .enter-btn {
+        color: #555;
+        font-family: 'Goldman', monospace;
+        font-size: clamp(0.8rem, 2.5vw, 1rem);
+        letter-spacing: 0.15em;
+        text-decoration: none;
+        background: none;
+        border: none;
+        transition: color 0.2s, opacity 0.4s;
         opacity: 0;
         pointer-events: none;
+    }
+    .enter-btn.visible { opacity: 1; pointer-events: auto; }
+    .enter-btn:hover   { color: #aaa; }
+
+    .pwa-fab {
+        position: fixed;
+        bottom: 28px; left: 50%;
+        transform: translateX(-50%) translateY(20px);
+        opacity: 0; pointer-events: none;
         transition: opacity 0.4s ease, transform 0.4s ease;
-        display: flex;
-        align-items: center;
-        gap: 8px;
+        display: flex; align-items: center; gap: 8px;
         padding: 10px 22px;
         background: rgba(255,255,255,0.07);
         border: 1px solid rgba(255,255,255,0.15);
         border-radius: 100px;
         color: rgba(255,255,255,0.7);
         font-family: 'Goldman', monospace;
-        font-size: 0.75rem;
-        letter-spacing: 0.08em;
-        cursor: pointer;
-        backdrop-filter: blur(8px);
-        white-space: nowrap;
-        z-index: 10;
+        font-size: 0.75rem; letter-spacing: 0.08em;
+        cursor: pointer; backdrop-filter: blur(8px);
+        white-space: nowrap; z-index: 10;
     }
-    .pwa-fab.visible {
-        opacity: 1;
-        transform: translateX(-50%) translateY(0);
-        pointer-events: auto;
-    }
-    .pwa-fab:hover { background: rgba(255,255,255,0.12); color: #fff; }
-    .pwa-fab svg { flex-shrink: 0; }
+    .pwa-fab.visible { opacity:1; transform:translateX(-50%) translateY(0); pointer-events:auto; }
+    .pwa-fab:hover   { background:rgba(255,255,255,0.12); color:#fff; }
 </style>
 
 <div class="hero">
     <div class="hero-inner">
-        <div class="title" id="titleEl"></div>
+        <div class="logo-line">
+            <span id="logoVeravart"></span><span id="logoGame"></span>
+        </div>
+
         <div class="subtitle" id="subtitleEl"></div>
+        <a href="{{ $googleUrl }}" class="enter-btn" id="enterBtn" data-loader data-loader-text="შესვლა...">
+            sign in
+        </a>
     </div>
 </div>
 
-{{-- PWA Install FAB --}}
 <button class="pwa-fab" id="pwaFab" onclick="openPwaModal()">
     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
         <path d="M12 2v13M8 9l4-4 4 4"/><path d="M3 17v2a2 2 0 002 2h14a2 2 0 002-2v-2"/>
@@ -410,18 +423,13 @@
 <script>
     const isAlreadyInstalled = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone;
     if (!isAlreadyInstalled) {
-        setTimeout(() => {
-            const fab = document.getElementById('pwaFab');
-            if (fab) fab.classList.add('visible');
-        }, 5000);
+        setTimeout(() => { const f=document.getElementById('pwaFab'); if(f) f.classList.add('visible'); }, 8000);
     }
 </script>
 
 <script>
     class TextScramble {
-        constructor(el) {
-            this.el = el;
-        }
+        constructor(el) { this.el = el; }
         setText(newText, symbolSets) {
             const oldText = this.el.innerText;
             const length  = Math.max(oldText.length, newText.length);
@@ -429,12 +437,10 @@
             const now = performance.now();
             this.queue = [];
             for (let i = 0; i < length; i++) {
-                const syms = Array.isArray(symbolSets)
-                    ? symbolSets[i % symbolSets.length]
-                    : symbolSets;
+                const syms = Array.isArray(symbolSets) ? symbolSets[i % symbolSets.length] : symbolSets;
                 const startAt  = now + i * 70 + Math.random() * 20;
                 const settleAt = startAt + 520 + Math.random() * 200;
-                this.queue.push({ from: oldText[i] || '', to: newText[i] || '', startAt, settleAt, syms, char: '', lastSwap: 0 });
+                this.queue.push({ from: oldText[i]||'', to: newText[i]||'', startAt, settleAt, syms, char:'', lastSwap:0 });
             }
             cancelAnimationFrame(this.frameRequest);
             this.frameRequest = requestAnimationFrame(t => this.update(t));
@@ -444,50 +450,60 @@
             let output = '', complete = 0;
             for (let i = 0; i < this.queue.length; i++) {
                 const q = this.queue[i];
-                if (now >= q.settleAt) {
-                    complete++;
-                    output += q.to;
-                } else if (now >= q.startAt) {
-                    if (!q.char || now - q.lastSwap > 90) {
-                        q.char     = q.syms[Math.floor(Math.random() * q.syms.length)];
-                        q.lastSwap = now;
-                    }
+                if (now >= q.settleAt)      { complete++; output += q.to; }
+                else if (now >= q.startAt)  {
+                    if (!q.char || now - q.lastSwap > 90) { q.char = q.syms[Math.floor(Math.random()*q.syms.length)]; q.lastSwap=now; }
                     output += `<span class="dud">${q.char}</span>`;
-                } else {
-                    output += q.from;
-                }
+                } else { output += q.from; }
             }
             this.el.innerHTML = output;
-            if (complete === this.queue.length) {
-                this.resolve();
-            } else {
-                this.frameRequest = requestAnimationFrame(t => this.update(t));
-            }
+            if (complete === this.queue.length) this.resolve();
+            else this.frameRequest = requestAnimationFrame(t => this.update(t));
         }
     }
 
     const symSets = [
         '⠁⠂⠃⠄⠅⠆⠇⠈⠉⠊⠋⠌⠍⠎⠏⠐⠑⠒⠓⠔⠕⠖⠗⠘⠙⠚⠛⠜⠝⠞⠟⠠⠡⠢⠣⠤⠥⠦⠧⠨⠩⠪⠫⠬⠭⠮⠯',
-        '♠♣♥♦♤♧♡♢',
-        '♔♕♖♗♘♙♚♛♜♝♞♟',
-        '•-·−',
-        '±×÷≈≠≤≥∞√∆∂∫∑∏∈∉',
+        '♠♣♥♦♤♧♡♢','♔♕♖♗♘♙♚♛♜♝♞♟','•-·−','±×÷≈≠≤≥∞√∆∂∫∑∏∈∉',
         'ᚠᚢᚦᚨᚱᚲᚷᚹᚺᚾᛁᛃᛇᛈᛉᛋᛏᛒᛖᛗᛚᛜᛞ',
         'あいうえおかきくけこさしすせそアイウエオカキクケコ',
         '←↑→↓↔↕⇐⇑⇒⇓⇔➔➜➤➝',
     ];
+    const subSyms = '⠁⠂⠃♠♣♥♔♕•-±×ᚠᚢあいう←↑→'.split('');
 
-    const scrambler  = new TextScramble(document.getElementById('titleEl'));
-    const scrambler2 = new TextScramble(document.getElementById('subtitleEl'));
-    const subSyms    = '⠁⠂⠃♠♣♥♔♕•-±×ᚠᚢあいう←↑→'.split('');
+    const logoVeravart = document.getElementById('logoVeravart');
+    const logoGame     = document.getElementById('logoGame');
+    const subtitleEl   = document.getElementById('subtitleEl');
+    const enterBtn     = document.getElementById('enterBtn');
+
+    const sVeravart = new TextScramble(logoVeravart);
+    const sGame     = new TextScramble(logoGame);
+    const sSub      = new TextScramble(subtitleEl);
+
+    function fadeIn(el) { el.style.opacity = '1'; }
 
     function animate() {
-        scrambler2.setText('Ghvedashvili presents...', subSyms).then(() => {
-            setTimeout(() => scrambler.setText('VERAVART GAME', symSets), 2000);
+        // Phase 1: subtitle შემოდის
+        fadeIn(subtitleEl);
+        sSub.setText('Ghvedashvili წარმოგიდგენთ', subSyms).then(() => {
+            // Phase 2: subtitle ქრება
+            setTimeout(() => {
+                subtitleEl.style.opacity = '0';
+                setTimeout(() => {
+                    subtitleEl.style.display = 'none';
+                    // Phase 3: veravart → game
+                    sVeravart.setText('veravart', symSets).then(() => {
+                        return sGame.setText(' game', subSyms);
+                    }).then(() => {
+                        // Phase 4: button
+                        setTimeout(() => enterBtn.classList.add('visible'), 600);
+                    });
+                }, 500);
+            }, 1200);
         });
     }
 
-    setTimeout(animate, 400);
+    setTimeout(animate, 600);
 </script>
 
 @endauth
