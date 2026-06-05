@@ -80,8 +80,8 @@
 </div>
 
 <div id="pull-bar" style="position:fixed;top:var(--nav-h,56px);left:0;right:0;background:#f1f3f4;border-bottom:1px solid #ddd;padding:8px 12px;display:flex;align-items:center;gap:8px;z-index:1025;transform:translateY(-100%);transition:transform 0.25s ease;font-family:monospace;">
-    <input id="pull-url-input" type="text" style="flex:1;font-size:1rem;border:1px solid #ccc;border-radius:4px;padding:6px 10px;outline:none;font-family:monospace;color:#222;background:#fff;touch-action:pan-x;-webkit-overflow-scrolling:touch;overflow-x:auto;" spellcheck="false" autocomplete="off">
-    <button onclick="goPullUrl()" style="padding:6px 14px;background:#1a73e8;color:#fff;border:none;border-radius:4px;font-size:0.82rem;cursor:pointer;white-space:nowrap;">→</button>
+    <div id="pull-url-input" contenteditable="true" spellcheck="false" autocorrect="off" autocapitalize="off" style="flex:1;font-size:1rem;border:1px solid #ccc;border-radius:4px;padding:6px 10px;outline:none;font-family:monospace;color:#222;background:#fff;overflow-x:auto;white-space:nowrap;-webkit-overflow-scrolling:touch;min-height:1.4em;cursor:text;"></div>
+    <button onclick="goPullUrl()" style="padding:6px 14px;background:#1a73e8;color:#fff;border:none;border-radius:4px;font-size:0.82rem;cursor:pointer;white-space:nowrap;flex-shrink:0;">→</button>
 </div>
 
 @include('layouts.navigation')
@@ -307,9 +307,9 @@ function triggerNativeInstall() {
     if (!isPwa) return;
     let startY = null, shown = false;
 
-    input.value = window.location.href;
+    input.textContent = window.location.href;
     input.addEventListener('keydown', function(e) {
-        if (e.key === 'Enter') goPullUrl();
+        if (e.key === 'Enter') { e.preventDefault(); goPullUrl(); }
     });
 
     document.addEventListener('touchstart', function(e) {
@@ -330,7 +330,7 @@ function triggerNativeInstall() {
 })();
 
 function goPullUrl() {
-    const url = document.getElementById('pull-url-input').value.trim();
+    const url = (document.getElementById('pull-url-input').textContent || '').trim();
     if (url) window.location.href = url;
 }
 
